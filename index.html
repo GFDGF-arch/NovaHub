@@ -1,731 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NovaWare 8.2</title>
-<style>
-:root{--face:#c0c0c0;--light:#fff;--mid:#808080;--dark:#404040;--blue:#000080;--cyan:#1084d0;--desktop:#008080}
-*{box-sizing:border-box}
-body{margin:0;font:13px Tahoma,Arial,sans-serif;background:var(--desktop);color:#111;overflow:hidden}
-button,input,select,textarea{font:inherit}
-button{background:var(--face);border:2px outset var(--light);padding:5px 9px;color:#111;cursor:pointer}
-button:active,.pressed{border-style:inset}
-button:disabled{color:#777;cursor:default}
-input,select,textarea{background:white;border:2px inset #aaa;padding:5px}
-#desktop{height:calc(100vh - 38px);position:relative;overflow:hidden;background:linear-gradient(135deg,#008080,#005080)}
-#wallpaper{position:absolute;inset:0;background-size:cover;background-position:center;pointer-events:none}
-#icons{position:absolute;inset:0;z-index:1}
-.icon{position:absolute;width:84px;min-height:78px;padding:5px;display:flex;flex-direction:column;align-items:center;gap:4px;color:white;text-align:center;text-shadow:1px 1px 2px #000;cursor:default;user-select:none;touch-action:none}
-.icon .emoji{font-size:31px;line-height:36px}
-.icon .name{font-size:12px;overflow-wrap:anywhere}
-.icon.selected{background:#ffffff35;outline:1px dotted white}
-#taskbar{height:38px;position:fixed;bottom:0;left:0;right:0;background:var(--face);border-top:2px solid white;display:flex;align-items:center;padding:3px;gap:5px;z-index:5000}
-#start{font-weight:bold;padding:6px 12px}
-#taskbuttons{display:flex;gap:4px;overflow:hidden;flex:1}
-.taskbutton{max-width:150px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:left}
-#clock{border:2px inset white;padding:5px 9px;min-width:67px;text-align:center}
-#startMenu,.context{position:fixed;background:var(--face);border:2px outset white;box-shadow:2px 2px 4px #0006;z-index:6000;padding:8px;display:none}
-#startMenu{bottom:38px;left:3px;width:235px}
-#startMenu h3{margin:5px 4px 10px}
-.menuitem{display:block;width:100%;text-align:left;margin:2px 0;padding:8px}
-.menuitem:hover{background:var(--blue);color:white}
-.context{min-width:170px}
-.context button{display:block;width:100%;border:0;text-align:left}
-.context button:hover{background:var(--blue);color:white}
-.window{position:absolute;top:55px;left:125px;width:min(650px,calc(100vw - 20px));height:min(470px,calc(100vh - 70px));min-width:260px;min-height:160px;background:var(--face);border:2px outset white;box-shadow:4px 5px 12px #0007;display:flex;flex-direction:column;z-index:10;resize:both;overflow:hidden}
-.window.maximized{left:0!important;top:0!important;width:100%!important;height:calc(100vh - 38px)!important;resize:none}
-.titlebar{height:27px;flex:none;background:linear-gradient(90deg,var(--blue),var(--cyan));color:white;padding:3px 4px 3px 7px;font-weight:bold;display:flex;align-items:center;justify-content:space-between;cursor:grab;touch-action:none;user-select:none}
-.titlebar.inactive{background:linear-gradient(90deg,#808080,#b5b5b5)}
-.title-actions{display:flex;gap:3px}
-.title-actions button{padding:0 7px;height:20px;font-weight:bold}
-.content{padding:12px;overflow:auto;flex:1}
-.statusbar{border-top:1px solid #888;padding:3px 7px;color:#444;font-size:11px;flex:none}
-.panel{background:#eee;border:2px inset white;padding:10px;margin:8px 0}
-.toolbar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
-hr{border:0;border-top:1px solid #888;border-bottom:1px solid white}
-h2{font-size:18px;margin:3px 0 10px}
-h3{font-size:14px;margin:5px 0}
-textarea{width:100%;min-height:160px;resize:vertical}
-video,audio{width:100%;margin-top:10px}
-canvas{display:block;max-width:100%;background:#111;margin:10px auto;border:3px inset #777;touch-action:none}
-#mineBoard{display:grid;gap:2px;width:max-content;margin:10px auto}
-.minecell{width:27px;height:27px;padding:0;font-weight:bold}
-.minecell.open{background:#ddd;border:1px solid #999}
-.store-shell{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;min-height:100%}
-.store-side{background:#d4d0c8;border:2px inset white;padding:8px}
-.store-side button{display:block;width:100%;text-align:left;margin:3px 0}
-.store-side button.active{background:#000080;color:white;border-style:inset}
-.store-main{min-width:0}
-.store-top{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-.store-top h2{white-space:nowrap;margin:0}
-.store-search{flex:1;min-width:90px}
-.store-feature{display:flex;align-items:center;gap:14px;background:linear-gradient(110deg,#000080,#1084d0);color:white;padding:15px;border:2px outset white;margin-bottom:14px;min-height:112px}
-.store-feature .emoji{font-size:48px}.store-feature button{margin-top:7px}
-.store-heading{display:flex;justify-content:space-between;align-items:center;margin:12px 0 7px}
-.storegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:9px}
-.storeApp{background:#d4d0c8;border:2px outset white;padding:9px;display:grid;grid-template-columns:42px minmax(0,1fr);gap:3px 8px;align-items:center;min-height:84px}
-.storeApp .emoji{font-size:32px;grid-row:span 2;text-align:center}
-.storeApp h3{margin:0;overflow-wrap:anywhere}
-.storeApp .app-meta{font-size:11px;color:#444}
-.storeApp button{grid-column:1/-1;width:100%;margin-top:4px}
-.storeApp .app-open{grid-column:1/-1}
-.store-detail{background:#d4d0c8;border:2px inset white;padding:14px;min-height:220px}
-.store-detail .detail-icon{font-size:58px;float:left;margin:0 16px 12px 0}
-.store-empty{background:#eee;border:2px inset white;padding:18px;text-align:center}
-.storeApp .app-description{font-size:11px;line-height:1.35;color:#444;margin:5px 0 2px}.storeApp{align-items:start}.download-page{text-align:center;padding:24px 18px;min-height:280px}.download-icon{font-size:54px;margin:10px}.download-track{height:22px;border:2px inset #aaa;background:#fff;padding:2px;margin:18px auto 8px;max-width:480px}.download-fill{height:100%;width:0;background:linear-gradient(90deg,#087eaa,#25b5e8);transition:width .08s linear}.download-percent{font-weight:bold;font-size:12px}
-
-@media(max-width:600px){.store-shell{grid-template-columns:105px minmax(0,1fr);gap:7px}.store-top{flex-wrap:wrap}.store-top h2{width:100%}.storegrid{grid-template-columns:1fr}.store-feature{padding:9px}.store-side{padding:4px}.store-side button{padding:5px 3px;font-size:11px}}
-.filelist{width:100%;border-collapse:collapse;background:white}
-.filelist th,.filelist td{text-align:left;padding:6px;border-bottom:1px solid #ddd}
-.filelist tr:hover{background:#dcecff}
-.desktop-shortcut{opacity:.95}
-#boot{position:fixed;inset:0;background:#000;color:white;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column}
-#boot .logo{font-size:44px;font-weight:bold;letter-spacing:2px}
-#boot .bar{width:220px;height:15px;border:1px solid #aaa;margin-top:20px;padding:2px}
-#boot .fill{height:100%;width:0;background:#19a7ff;animation:boot 1.1s ease-out forwards}
-@keyframes boot{to{width:100%}}
-#toast{position:fixed;bottom:48px;right:12px;background:#ffffd9;border:1px solid #555;padding:8px 12px;z-index:9000;display:none;box-shadow:2px 2px 5px #0005}
-.nova-easter-overlay{position:fixed;inset:0;background:#0007;z-index:100000;display:flex;align-items:center;justify-content:center;padding:16px}.nova-easter-error{width:min(430px,100%);background:#c0c0c0;border:3px outset #fff;box-shadow:5px 7px 18px #0009;font:13px Tahoma,Arial,sans-serif}.nova-easter-title{background:linear-gradient(90deg,#000080,#1084d0);color:#fff;padding:7px 9px;font-weight:bold}.nova-easter-body{display:flex;gap:14px;align-items:flex-start;padding:18px}.nova-easter-body .error-icon{font-size:42px}.nova-easter-actions{display:flex;justify-content:flex-end;gap:7px;padding:0 14px 14px}.nova-easter-actions button{min-width:82px}.small{font-size:11px;color:#555}.muted{color:#666}
-#notifyBtn{min-width:38px;padding:5px 8px}#notifyPanel{display:none;position:fixed;right:6px;bottom:42px;width:min(330px,calc(100vw - 12px));max-height:70vh;overflow:auto;background:#c0c0c0;border:2px outset white;z-index:7000;padding:10px;box-shadow:3px 3px 8px #0007}#notifyPanel h3{margin:0 0 8px}#notifyList{max-height:42vh;overflow:auto}.notice{background:#fff;border:1px solid #888;padding:8px;margin:5px 0}.notice b{display:block}.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}.quick-actions button{min-height:38px}.theme-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.theme-chip{width:84px;height:48px;border:3px outset white;cursor:pointer}.widget-clock{position:absolute;right:18px;top:18px;z-index:0;background:#0008;color:white;padding:12px 16px;text-align:center;border:1px solid #ffffff66;text-shadow:1px 1px #000;pointer-events:none}.widget-clock strong{display:block;font-size:30px}.start-search{width:100%;margin:6px 0}
-/* NovaWare classic Solitaire */
-.sol-window{background:#008000;padding:10px;color:#fff;min-height:350px;font-family:Tahoma,Arial,sans-serif}
-.sol-menubar{display:flex;gap:0;background:#c0c0c0;color:#111;margin:-10px -10px 10px;padding:2px 5px}
-.sol-menubar button{border:0;background:transparent;padding:3px 10px}.sol-menubar button:hover{background:#000080;color:white}
-.sol-top,.sol-tableau{display:grid;grid-template-columns:repeat(7,minmax(52px,1fr));gap:7px;margin-bottom:14px}
-.sol-top{grid-template-columns:repeat(7,minmax(45px,1fr));}
-.sol-slot{height:76px;min-width:0;border:1px solid #9bd09b;border-radius:5px;position:relative;display:flex;justify-content:center;align-items:flex-start}
-.sol-card{width:100%;height:76px;border-radius:5px;background:#fff;color:#111;border:1px solid #222;box-shadow:1px 1px 1px #003b00;position:relative;text-align:left;padding:4px 5px;font: bold 15px Georgia,serif;cursor:pointer;user-select:none}
-.sol-card.red{color:#d00000}.sol-card.back{background:repeating-linear-gradient(45deg,#173d91,#173d91 4px,#fff 4px,#fff 5px);border:3px solid white;color:transparent}
-.sol-card.selected{outline:3px solid #ffeb00;transform:translateY(-3px)}
-.sol-card{touch-action:none}.sol-card.back{background:var(--sol-back,repeating-linear-gradient(45deg,#173d91,#173d91 4px,#fff 4px,#fff 5px));cursor:grab}.sol-card:active{cursor:grabbing}.sol-column{touch-action:pan-y}.sol-foundation{cursor:pointer}.sol-empty{font-size:27px;color:#9bd09b;padding-top:18px}
-.sol-tableau{align-items:start}.sol-column{min-height:220px;position:relative}.sol-column .sol-card{display:block;margin-bottom:-49px}.sol-column .sol-card:last-child{margin-bottom:0}
-.sol-stats{display:flex;justify-content:space-between;background:#c0c0c0;color:#111;padding:4px 7px;margin:10px -10px -10px;font-size:12px}
-@media(max-width:520px){.sol-window{padding:5px}.sol-top,.sol-tableau{gap:3px}.sol-card{height:66px;font-size:12px;padding:3px}.sol-slot{height:66px}.sol-column .sol-card{margin-bottom:-45px}.sol-menubar{margin:-5px -5px 8px}}
-@media(max-width:600px){.window{left:5px;top:8px;width:calc(100vw - 10px);height:calc(100vh - 54px)}.icon{width:75px}.taskbutton{max-width:85px}}
-
-.mini-unique{margin:12px 0;padding:14px;border:1px solid hsl(var(--mini-hue) 45% 38%);background:linear-gradient(135deg,hsl(var(--mini-hue) 50% 94%),#fff 75%);box-shadow:inset 1px 1px #fff,2px 2px 0 #888;color:#17202a}
-.mini-unique-top{display:flex;justify-content:space-between;gap:8px;font-size:10px;font-weight:bold;letter-spacing:1px;color:hsl(var(--mini-hue) 55% 28%)}
-.mini-unique h3{margin:9px 0 4px;font-size:18px}.mini-unique p{margin:4px 0 10px;font-size:12px}
-.mini-unique textarea{width:100%;min-height:78px;resize:vertical;background:#fff;border:2px inset #aaa;padding:8px;font:13px Tahoma,Arial}
-.mini-unique-foot{margin-top:8px;font-size:9px;letter-spacing:1px;color:#555}
-.nova-browser{font:13px Arial,sans-serif;background:#fff;color:#222;min-height:100%;margin:-12px;padding:12px}.browser-toolbar{display:flex;gap:5px;align-items:center;flex-wrap:wrap;background:#e7e7e7;padding:7px;border:1px solid #aaa}.browser-toolbar button{min-width:34px}.browser-address{flex:1;min-width:130px;border:1px solid #888;padding:7px;background:#fff}.browser-brand{text-align:center;padding:28px 8px 18px}.browser-brand .logo{font-size:42px;font-weight:bold;color:#2456a6;letter-spacing:-2px}.browser-search{display:flex;gap:6px;max-width:620px;margin:14px auto}.browser-search input{flex:1;min-width:0;border:1px solid #999;border-radius:18px;padding:11px 16px}.browser-search button{border:1px solid #aaa;border-radius:4px;padding:8px 15px}.browser-tabs{display:flex;gap:5px;margin:8px 0}.browser-tab{padding:7px 12px;background:#eee;border:1px solid #aaa;cursor:pointer}.browser-tab.active{background:#d9e7ff;border-bottom:2px solid #2456a6}.browser-results{max-width:780px;margin:12px auto}.browser-result{padding:12px 4px;border-bottom:1px solid #eee}.browser-result a{color:#174ea6;font-size:17px;text-decoration:none;cursor:pointer}.browser-result a:hover{text-decoration:underline}.browser-url{font-size:12px;color:#188038;margin:4px 0}.browser-snippet{line-height:1.45;color:#444}.browser-pagination{display:flex;gap:5px;justify-content:center;align-items:center;flex-wrap:wrap;padding:18px}.browser-pagination button{background:#fff;border:1px solid #aaa;padding:6px 10px}.browser-pagination button:disabled{background:#e5e5e5}.browser-status{font-size:12px;color:#666;padding:8px 2px}.browser-home-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;color:#2456a6;font-size:13px}.browser-home-links span{cursor:pointer}.browser-page{max-width:780px;margin:25px auto;padding:12px;line-height:1.6}.browser-page h1{color:#2456a6}.browser-disclaimer{font-size:11px;color:#777;text-align:center;margin:10px}.browser-search button{cursor:pointer}
-.browser-result{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;padding:13px 8px;border-bottom:1px solid #e5e5e5;min-height:116px}.browser-result a{font-size:16px}.browser-thumb{height:82px;border:1px solid #b8c5d8;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:38px;background:linear-gradient(135deg,#d9e8ff,#f5f7fb);box-shadow:inset 0 0 0 3px #ffffff88}.browser-result[data-kind="video"] .browser-thumb:after{content:"▶";font-size:13px;color:white;background:#2456a6;border-radius:20px;padding:6px 9px;margin-left:-25px;margin-top:35px}.browser-result[data-kind="image"] .browser-thumb{background:linear-gradient(135deg,#f9d9b8,#e8d9ff 55%,#bde9df)}.browser-result[data-kind="forum"] .browser-thumb{background:linear-gradient(135deg,#e6e6e6,#fff)}.browser-result-main{min-width:0}.browser-kind{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:#68778b;font-weight:bold;margin-bottom:4px}.browser-meta{font-size:11px;color:#777;margin-top:5px}.browser-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}.browser-badge{font-size:10px;background:#eef3fa;border:1px solid #d5dfec;border-radius:10px;padding:2px 7px;color:#40536d}.browser-featureline{font-size:12px;color:#444;margin-top:4px;line-height:1.4}.browser-result:hover{background:#f8fbff}.browser-result[data-kind="directory"] .browser-thumb{background:linear-gradient(135deg,#d4f0d8,#e8f4ff)}
-@media(max-width:480px){.browser-result{grid-template-columns:70px minmax(0,1fr);gap:8px}.browser-thumb{height:68px;font-size:30px}.browser-result a{font-size:14px}}
-
-.browser-extra-tools{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:-4px auto 10px}.browser-extra-tools button,.browser-save,.browser-related button{border:1px solid #b9c5d5;background:#f5f8fc;border-radius:4px;padding:5px 9px;color:#29486d;cursor:pointer;font-size:11px}.browser-tabs button{cursor:pointer}.browser-thumb{flex-direction:column;gap:3px}.browser-thumb small{font-size:8px;letter-spacing:.6px;color:#52657c;background:#ffffffb8;padding:2px 5px;border-radius:8px}.browser-save{padding:2px 7px}.browser-page .mock-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}.mock-picture{min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #c5cfdd;border-radius:6px;background:linear-gradient(135deg,hsl(var(--h) 65% 86%),hsl(calc(var(--h) + 65) 60% 94%));font-size:42px}.mock-picture small{font-size:11px;color:#40536d}.mock-video{height:210px;background:linear-gradient(135deg,#172b48,#314d75);color:white;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;margin:18px 0}.mock-video div{font-size:38px;border:2px solid white;border-radius:50%;width:70px;height:70px;text-align:center;line-height:66px}.mock-video small{color:#dbeafe}.browser-related{background:#f2f6fb;padding:10px;border:1px solid #d8e1ed;margin:18px 0}.browser-related button{margin:3px}
-
-
-/* NovaBrowser 1998 / Progressbar-inspired skin */
-.nova-browser{font:12px Tahoma,Arial,sans-serif!important;color:#111!important;background:#c0c0c0!important;min-height:100%;margin:-12px!important;padding:5px!important;border:1px solid #fff;box-shadow:inset 1px 1px #dfdfdf,inset -1px -1px #808080}
-.nova-browser *{box-sizing:border-box}
-.nova-browser button{font:12px Tahoma,Arial,sans-serif!important;color:#111!important;background:#c0c0c0!important;border:1px solid!important;border-color:#fff #404040 #404040 #fff!important;border-radius:0!important;padding:4px 8px!important;box-shadow:inset -1px -1px #808080,inset 1px 1px #dfdfdf;cursor:pointer}
-.nova-browser button:active{border-color:#404040 #fff #fff #404040!important;box-shadow:inset 1px 1px #808080,inset -1px -1px #dfdfdf;padding:5px 7px 3px 9px!important}
-.browser-menubar{height:24px;display:flex;align-items:center;gap:0;padding:0 2px;background:#c0c0c0;border-bottom:1px solid #808080}
-.browser-menubar button{border:0!important;box-shadow:none!important;padding:3px 9px!important}
-.browser-menubar button:active{border:1px dotted #000!important;padding:3px 9px!important}
-.browser-toolbar{display:flex;gap:4px;align-items:center;flex-wrap:wrap;background:#c0c0c0!important;padding:6px 3px!important;border:0!important;border-bottom:1px solid #808080!important}
-.browser-toolbar button{min-width:29px;min-height:25px;font-weight:bold!important}
-.browser-address-label{font-size:11px;font-weight:bold;margin-left:4px}
-.browser-address{flex:1;min-width:100px;border:2px inset #fff!important;padding:5px 6px!important;background:#fff!important;color:#111!important;font:12px 'Courier New',monospace!important;border-radius:0!important}
-.browser-shortcuts{display:flex;gap:3px;flex-wrap:wrap;padding:4px 3px;background:#c0c0c0;border-bottom:1px solid #808080}
-.browser-shortcuts button{font-size:11px!important;padding:3px 7px!important}
-#browserView{background:#fff;border:2px inset #fff;min-height:320px;padding:0 10px 12px;overflow:auto}
-.browser-brand{text-align:center;padding:26px 8px 18px!important;max-width:760px;margin:0 auto}
-.browser-brand .logo{font:bold 38px 'Courier New',monospace!important;color:#000080!important;letter-spacing:-3px!important;text-shadow:2px 2px #c0c0c0}
-.browser-brand .logo span{color:#008000}
-.browser-brand-sub{font:10px 'Courier New',monospace;letter-spacing:2px;color:#404040;margin:0 0 22px}
-.browser-search-panel{max-width:530px;margin:0 auto;padding:12px 14px;background:#c0c0c0;border:2px groove #fff;text-align:left}
-.browser-search-panel>b{font-size:12px}
-.browser-search{display:flex;gap:5px;max-width:620px;margin:8px auto!important}
-.browser-search input{flex:1;min-width:0;border:2px inset #fff!important;border-radius:0!important;padding:6px 7px!important;background:#fff!important;color:#000!important;font:13px 'Courier New',monospace!important}
-.browser-search button{border-radius:0!important;padding:5px 14px!important}
-.browser-home-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;color:#0000aa!important;font-size:11px!important;margin-top:9px}
-.browser-home-links span{cursor:pointer;text-decoration:underline}
-.browser-disclaimer{font:10px Tahoma,Arial,sans-serif!important;color:#555!important;text-align:center;margin:15px 0 0!important}
-.browser-search-wrap{margin:8px 0 5px;padding:8px;background:#c0c0c0;border:1px solid #808080}
-.browser-search-wrap .browser-search{max-width:none;margin:0 auto 6px!important}
-.browser-extra-tools{justify-content:flex-start!important;margin:4px 0 0!important}
-.browser-extra-tools button,.browser-save,.browser-related button{border-radius:0!important;background:#c0c0c0!important;color:#000!important;border:1px solid!important;border-color:#fff #404040 #404040 #fff!important;box-shadow:inset -1px -1px #808080,inset 1px 1px #dfdfdf}
-.browser-tabs{display:flex;gap:2px!important;margin:7px 0 0!important;border-bottom:2px solid #808080;flex-wrap:wrap}
-.browser-tab{padding:5px 9px!important;background:#c0c0c0!important;border:1px solid!important;border-color:#fff #404040 #404040 #fff!important;border-radius:0!important;font-size:11px}
-.browser-tab.active{background:#fff!important;border-bottom:1px solid #fff!important;color:#000!important}
-.browser-results{max-width:900px!important;margin:0 auto!important;background:#fff;padding:4px 8px}
-.browser-status{font:11px 'Courier New',monospace!important;color:#222!important;padding:7px 2px!important;border-bottom:1px solid #c0c0c0}
-.browser-result{display:grid;grid-template-columns:70px minmax(0,1fr)!important;gap:9px!important;padding:8px 4px!important;border-bottom:1px dotted #999!important;min-height:80px!important}
-.browser-result a{color:#0000aa!important;font: bold 13px Tahoma,Arial,sans-serif!important;text-decoration:underline!important}
-.browser-result a:visited{color:#800080!important}
-.browser-result:hover{background:#f2f2f2!important}
-.browser-thumb{height:56px!important;border:1px solid #808080!important;border-radius:0!important;box-shadow:inset 1px 1px #fff!important;background:#e0e0e0!important;font-size:27px!important}
-.browser-thumb small{font:8px 'Courier New',monospace!important;color:#000!important;background:#fff!important;border-radius:0!important}
-.browser-url{font:10px 'Courier New',monospace!important;color:#008000!important;margin:3px 0!important}
-.browser-kind{font:9px 'Courier New',monospace!important;letter-spacing:0!important;color:#555!important}
-.browser-featureline{font:11px Tahoma,Arial,sans-serif!important;color:#222!important;line-height:1.35!important}
-.browser-meta{font:10px Tahoma,Arial,sans-serif!important;color:#555!important}
-.browser-badge{font:9px Tahoma,Arial,sans-serif!important;background:#e5e5e5!important;border:1px solid #aaa!important;border-radius:0!important;color:#222!important;padding:2px 4px!important}
-.browser-pagination{background:#c0c0c0;border:1px solid #808080;margin:8px 0;padding:7px!important;font:11px 'Courier New',monospace}
-.browser-page{max-width:850px!important;margin:10px auto!important;padding:12px!important;line-height:1.5!important;background:#fff;border:1px solid #c0c0c0}
-.browser-page h1{font:bold 20px Tahoma,Arial,sans-serif!important;color:#000080!important;border-bottom:1px solid #808080;padding-bottom:7px}
-.browser-page .panel,.browser-related{background:#e5e5e5!important;border:1px solid #808080!important;border-radius:0!important;padding:9px!important}
-.browser-page .mock-gallery{gap:5px!important}.mock-picture{border:1px solid #808080!important;border-radius:0!important}
-.mock-video{border-radius:0!important}
-.browser-statusbar{display:flex;align-items:center;gap:8px;min-height:23px;padding:3px 5px;margin-top:4px;background:#c0c0c0;border:1px solid;border-color:#808080 #fff #fff #808080;font:10px Tahoma,Arial,sans-serif;color:#222}
-.browser-statusbar>span:first-child{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.browser-status-meter{display:flex;gap:2px;padding:2px;border:1px inset #fff;height:13px}
-.browser-status-meter i{display:block;width:7px;background:#008000}
-@media(max-width:480px){.browser-result{grid-template-columns:52px minmax(0,1fr)!important;gap:6px!important}.browser-thumb{height:48px!important;font-size:23px!important}.browser-toolbar{gap:2px}.browser-address-label{display:none}.browser-menubar button{padding:3px 6px!important}}
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a35">
+  <meta name="description" content="NovaHub — a home for applications, projects and downloads by Nova.">
+  <title>NovaHub — Apps, projects & downloads</title>
+  <style>
+    :root {
+      --bg: #0c1224;
+      --panel: #151f38;
+      --panel2: #1b2948;
+      --line: #344464;
+      --text: #edf3ff;
+      --muted: #aab8d2;
+      --blue: #78aaff;
+      --cyan: #76e0e2;
+      --green: #85e0a3;
+      --shadow: 0 18px 55px rgba(0,0,0,.28);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 15% 0%, rgba(73,112,190,.22), transparent 42%),
+        radial-gradient(ellipse at 100% 35%, rgba(47,157,171,.12), transparent 35%),
+        var(--bg);
+      font: 15px/1.6 "Segoe UI", Tahoma, sans-serif;
+    }
+    a { color: inherit; }
+    .shell { width: min(1000px, calc(100% - 32px)); margin: 0 auto; }
+    header {
+      position: sticky; top: 0; z-index: 5;
+      background: rgba(12,18,36,.88);
+      border-bottom: 1px solid rgba(120,170,255,.2);
+      backdrop-filter: blur(12px);
+    }
+    .nav { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; font-weight: 750; font-size: 19px; letter-spacing: .2px; }
+    .brand-mark {
+      width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px;
+      color: #0d1930; font-weight: 900; background: linear-gradient(135deg,var(--blue),var(--cyan));
+      box-shadow: 0 5px 18px rgba(118,224,226,.2);
+    }
+    .nav-links { display: flex; gap: 22px; color: var(--muted); font-size: 13px; }
+    .nav-links a { text-decoration: none; }
+    .nav-links a:hover { color: white; }
+    .hero { padding: 82px 0 55px; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 8px; padding: 6px 11px;
+      border: 1px solid #3b5279; border-radius: 999px; color: #c8dcff;
+      background: rgba(66,104,166,.15); font-size: 12px; font-weight: 650;
+    }
+    .tag-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
+    h1 { margin: 19px 0 12px; max-width: 720px; font-size: clamp(42px,8vw,70px); line-height: 1.04; letter-spacing: -2.8px; }
+    .gradient { color: transparent; background: linear-gradient(90deg,#a8caff,#7ce2e4); background-clip: text; }
+    .hero p { max-width: 620px; color: var(--muted); font-size: 17px; margin: 0; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 27px; }
+    .btn {
+      display: inline-flex; justify-content: center; align-items: center; gap: 9px;
+      padding: 11px 17px; border-radius: 9px; text-decoration: none; font-weight: 700;
+      border: 1px solid transparent; transition: transform .15s, background .15s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { color: #0c1830; background: linear-gradient(110deg,#a8caff,#7ce2e4); }
+    .btn-secondary { color: var(--text); border-color: var(--line); background: rgba(255,255,255,.035); }
+    section { padding: 25px 0 48px; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 15px; margin-bottom: 18px; }
+    .section-heading h2 { margin: 0; font-size: 25px; letter-spacing: -.6px; }
+    .section-heading p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .app-card {
+      display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 18px;
+      padding: 22px; border: 1px solid var(--line); border-radius: 15px;
+      background: linear-gradient(130deg,rgba(27,41,72,.96),rgba(21,31,56,.96));
+      box-shadow: var(--shadow);
+    }
+    .app-icon {
+      width: 62px; height: 62px; display: grid; place-items: center; border-radius: 14px;
+      color: #d9e8ff; font-size: 27px; font-weight: 800;
+      background: linear-gradient(145deg,#294c80,#172a4b); border: 1px solid #5273a5;
+    }
+    .app-info h3 { margin: 0; font-size: 19px; }
+    .app-info p { margin: 4px 0 9px; color: var(--muted); font-size: 13px; }
+    .pills { display: flex; flex-wrap: wrap; gap: 7px; }
+    .pill { padding: 3px 8px; border-radius: 6px; color: #c5d8f7; background: #263958; font-size: 11px; }
+    .status { color: var(--green); }
+    .download-note { margin: 12px 2px 0; color: #91a2bf; font-size: 12px; }
+    .empty-card {
+      padding: 23px; border: 1px dashed #405273; border-radius: 13px;
+      color: var(--muted); background: rgba(255,255,255,.018);
+    }
+    .empty-card strong { color: var(--text); }
+    .about-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 13px; }
+    .about-card { padding: 17px; border: 1px solid var(--line); border-radius: 12px; background: rgba(21,31,56,.72); }
+    .about-card .symbol { color: var(--cyan); font-size: 19px; }
+    .about-card h3 { margin: 7px 0 4px; font-size: 14px; }
+    .about-card p { margin: 0; color: var(--muted); font-size: 12px; }
+    footer { margin-top: 28px; padding: 23px 0 35px; border-top: 1px solid rgba(120,170,255,.16); color: #8798b6; font-size: 12px; }
+    footer .shell { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 650px) {
+      .nav-links { gap: 12px; font-size: 12px; }
+      .hero { padding-top: 59px; }
+      .app-card { grid-template-columns: auto 1fr; }
+      .app-card .app-action { grid-column: 1 / -1; }
+      .app-action .btn { width: 100%; }
+      .about-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 390px) { .nav-links a:nth-child(2) { display:none; } h1 { letter-spacing:-1.8px; } }
+  </style>
 </head>
 <body>
-<div id="boot"><div class="logo">🪟 NovaWare 8.2</div><div>Starting NovaOS...</div><div class="bar"><div class="fill"></div></div></div>
-<div id="desktop"><div id="wallpaper"></div><div id="icons"></div></div>
-<div id="startMenu"><h3>🪟 NovaWare 8.2</h3><input id="startSearch" class="start-search" placeholder="Search programs..." oninput="filterStart(this.value)"><hr><div id="startItems"></div><hr><button class="menuitem" onclick="openApp('store')">🛍 NovaStore</button><button class="menuitem" onclick="openApp('about')">💻 About NovaWare</button><button class="menuitem" onclick="shutdown()">⏻ Shut down</button></div>
-<div id="desktopContext" class="context"><button onclick="openApp('filemanager')">📁 Open NovaFS</button><button onclick="openApp('notepad')">📝 New text document</button><button onclick="refreshDesktop()">↻ Refresh</button><button onclick="openApp('settings')">⚙ Display settings</button><button onclick="toggleDesktopWidget()">🕒 Toggle desktop clock</button><button onclick="notify('NovaWare is ready','Your desktop is running smoothly.')">🔔 Test notification</button></div>
-<div id="taskbar"><button id="start" onclick="toggleStart()">🪟 Start</button><div id="taskbuttons"></div><button id="notifyBtn" title="Notifications and quick settings" onclick="toggleNotifications()">🔔</button><div id="clock">00:00</div></div><div id="notifyPanel"><h3>🔔 Nova Notification Center</h3><div class="quick-actions"><button onclick="openApp('settings')">⚙ Settings</button><button onclick="openApp('store')">🛍 NovaStore</button><button onclick="openApp('filemanager')">📁 NovaFS</button><button onclick="toggleDesktopWidget()">🕒 Desktop clock</button></div><hr><div style="display:flex;justify-content:space-between;align-items:center"><b>Recent notifications</b><button onclick="clearNotifications()">Clear all</button></div><div id="notifyList"></div></div>
-<div id="windows"></div><div id="toast"></div>
-<script>
-"use strict";
-/* NovaWare 8.2 — expanded desktop shell + IndexedDB-backed NovaFS */
-const DB_NAME="NovaWare71DB", DB_VERSION=1;
-let db=null,z=20,iconPositions={},musicFiles=[],musicIndex=0,audioURL=null,videoURL=null;
-let mineInterval=null,mineSeconds=0;
-let snakeLoop=null,snakeAlive=false,snake=[],food={},direction={x:1,y:0},score=0;
-let pongLoop=null,pongRunning=false,ball={x:200,y:125,dx:4,dy:3},playerY=95,computerY=95,playerScore=0,computerScore=0;
-let breakLoop=null,breakRunning=false,paddle={x:165},brickBall={x:200,y:230,dx:3,dy:-3},bricks=[];
-const apps={
- browser:{name:"NovaBrowser",icon:"🌐",installed:true},filemanager:{name:"NovaFS",icon:"📁",installed:true},minesweeper:{name:"NovaSweeper",icon:"💣",installed:true},
- snake:{name:"Snake",icon:"🐍",installed:true},pong:{name:"Pong",icon:"🏓",installed:true},
- breakout:{name:"Breakout",icon:"🧱",installed:true},music:{name:"NovaMP3",icon:"🎵",installed:true},
- video:{name:"NovaMP4",icon:"🎬",installed:true},notepad:{name:"Notepad",icon:"📝",installed:true},
- calculator:{name:"Calculator",icon:"🧮",installed:true},paint:{name:"NovaPaint",icon:"🎨",installed:true},
- settings:{name:"Settings",icon:"⚙️",installed:true},
- terminal:{name:"NovaTerminal",icon:"⌨️",installed:true},store:{name:"NovaStore",icon:"🛍️",installed:true},
- about:{name:"About NovaWare",icon:"💻",installed:true}
-};
-const catalog={
- stopwatch:{name:"Stopwatch",icon:"⏱️"},calendar:{name:"Calendar",icon:"📅"},clock:{name:"World Clock",icon:"🕒"},reader:{name:"NovaReader",icon:"📖"},
- soundrec:{name:"Sound Recorder",icon:"🎙️"},system:{name:"System Monitor",icon:"📊"},solitaire:{name:"Solitaire",icon:"🃏"}
-};
-const appDescriptions={
- browser:"NovaBrowser is NovaWare's built-in pretend web browser. Search any words to explore a fictional search engine with exactly 1,000 generated results per query, browse mock pages, and move through 100 result pages. It works offline and does not visit real websites.",filemanager:"Browse, organize, import, rename and back up files in NovaFS, NovaWare's browser-based file system.",minesweeper:"Play the classic mine-clearing puzzle with selectable board sizes and difficulty settings.",snake:"Guide the growing snake, collect food and avoid running into the walls or your own tail.",pong:"Play a retro paddle-and-ball match against the computer and try to outscore it.",breakout:"Bounce the ball off your paddle, clear rows of bricks and keep the ball in play.",music:"Open and play audio files from your device with a simple local music player.",video:"Open local video files and watch them in NovaWare's built-in video player.",notepad:"Write quick notes and text documents, then save them into your NovaFS Documents folder.",calculator:"Perform everyday arithmetic with a compact desktop calculator.",paint:"Draw freely on a canvas, choose colors and save your artwork.",settings:"Personalize the desktop, adjust display options and manage NovaWare preferences.",terminal:"Explore the NovaWare command prompt and run the built-in desktop commands.",store:"Browse the NovaWare catalogue, read app details and install or remove applications.",about:"Read the NovaWare version information, system details and project credits.",
- stopwatch:"Measure elapsed time with start, pause, reset and lap controls.",calendar:"View a monthly calendar and check dates at a glance.",clock:"See the current time in different locations using the world clock.",reader:"Open and read text documents in a clean, comfortable reading view.",soundrec:"Record audio from an available microphone and save the recording locally.",system:"View browser, storage and NovaWare runtime information in one system panel.",solitaire:"Play classic Klondike Solitaire with draggable cards, a draw pile and four foundations."
-};
+  <header>
+    <div class="shell nav">
+      <a class="brand" href="#top"><span class="brand-mark">N</span> NovaHub</a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#apps">Applications</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/GFDGF-arch/NovaHub" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
 
-// 100 additional NovaWare applications. Each has a working mini-tool interface.
-const miniAppRows = `worldatlas|Nova Atlas|🌍|tools|lookup|Explore a searchable mini world atlas.
-dictionary|Wordbook|📚|tools|lookup|Look up words and build your own vocabulary list.
-thesaurus|WordSwap|🔁|tools|lookup|Collect synonyms and alternative phrases.
-unitlab|Unit Lab|📏|tools|convert|Convert common measurements.
-currencydesk|Currency Desk|💱|tools|convert|Convert currencies with editable example rates.
-percentpal|Percent Pal|％|tools|math|Calculate percentages and discounts.
-fractionforge|Fraction Forge|🍕|tools|math|Work with fractions and decimals.
-tipjar|Tip Calculator|🧾|tools|math|Split a bill and calculate a tip.
-budgetbook|Budget Book|💰|tools|tracker|Track a simple budget.
-expensepad|Expense Pad|🧮|tools|tracker|Log expenses and see your total.
-habitgarden|Habit Garden|🌱|tools|checklist|Grow a garden by checking off habits.
-taskboard|Task Board|📋|tools|checklist|Keep a small task list.
-homecheck|Home Checklist|🏠|tools|checklist|Make a checklist for home tasks.
-studylist|Study List|🎓|tools|checklist|Organize study tasks.
-packingpal|Packing Pal|🧳|tools|checklist|Build a packing checklist.
-grocerygrid|Grocery Grid|🛒|tools|checklist|Make a grocery list.
-readinglog|Reading Log|📖|tools|tracker|Track books and reading progress.
-watchlist|Watchlist|🍿|media|tracker|Keep a list of films and shows.
-gametrack|Game Tracker|🎮|games|tracker|Track games you want to play.
-plantdiary|Plant Diary|🪴|tools|journal|Write plant care notes.
-dailyjournal|Daily Journal|📔|tools|journal|Write a daily journal entry.
-dreamlog|Dream Log|💭|tools|journal|Keep a private dream journal in this browser.
-quicknotes|Quick Notes|🗒️|tools|journal|Capture quick notes.
-ideaBox|Idea Box|💡|tools|journal|Save your next big ideas.
-lyricsnotebook|Song Notebook|🎼|media|journal|Draft original song ideas.
-storystarter|Story Starter|✍️|tools|writer|Generate a random writing prompt.
-namefoundry|Name Foundry|🔤|tools|random|Generate names for characters and projects.
-passwordmaker|Passphrase Maker|🔐|tools|random|Create a memorable random passphrase locally.
-decisionwheel|Decision Wheel|🎡|tools|random|Pick between options at random.
-coinflip|Coin Flip|🪙|games|random|Flip a virtual coin.
-dicecup|Dice Cup|🎲|games|random|Roll virtual dice.
-numberdraw|Number Draw|🔢|games|random|Draw a random number in a range.
-colorpicker|Color Picker|🎨|tools|color|Explore and copy color values.
-palettebox|Palette Box|🖌️|tools|color|Build a five-color palette.
-contrastcheck|Contrast Check|◐|tools|color|Compare two colors.
-pixelpad|Pixel Pad|🟪|tools|creative|Draw pixel art on a small grid.
-asciiart|ASCII Studio|⌨️|creative|creative|Make text banners from your own words.
-emojiwall|Emoji Wall|😀|creative|creative|Compose emoji patterns.
-moodboard|Mood Board|🧷|creative|journal|Collect visual ideas as text cards.
-postertext|Poster Maker|🪧|creative|writer|Lay out a simple text poster.
-pomodoro|Focus Tomato|🍅|tools|timer|Run a focus timer.
-countdown|Countdown Clock|⏳|tools|timer|Set a countdown in minutes.
-intervalbell|Interval Bell|🔔|tools|timer|Time repeating work and rest intervals.
-stopwatchpro|Lap Timer|🏁|tools|timer|Record timed laps.
-metronome|Nova Metronome|🥁|media|timer|Tap along to a steady beat counter.
-breathpace|Breath Pacer|🌬️|tools|timer|Follow a gentle visual breathing pace.
-typingrace|Typing Sprint|⌨️|games|typing|Practice typing accuracy.
-memorymatch|Memory Match|🧠|games|game|Play a quick matching game.
-numberguess|Number Guess|❓|games|game|Guess the hidden number.
-higherlower|Higher or Lower|⬆️|games|game|Guess whether the next number is higher or lower.
-triviaquiz|Trivia Cards|❔|games|quiz|Try a small general knowledge quiz.
-flashcards|Flashcard Desk|🗃️|tools|flashcards|Create and review your own flashcards.
-mathdrill|Math Drill|➗|games|quiz|Practice quick arithmetic.
-spellingbee|Spelling Practice|🐝|games|quiz|Practice spelling with your own word list.
-geographyquiz|Geo Quiz|🗺️|games|quiz|Test your geography knowledge.
-calendarplanner|Planner Pad|🗓️|tools|date|Plan a date and write a note.
-datecalc|Date Calculator|📆|tools|date|Count days between dates.
-agecalculator|Age Calculator|🎂|tools|date|Calculate the time between two dates.
-timezoneplanner|Time Zone Notes|🌐|tools|lookup|Compare times using your own UTC offsets.
-worldevents|Event Planner|🎟️|tools|journal|Keep a local event list.
-textcase|Case Converter|Aa|tools|text|Convert text between cases.
-wordcount|Word Counter|🔠|tools|text|Count words, characters and lines.
-textcleaner|Text Cleaner|🧹|tools|text|Clean up whitespace and blank lines.
-markdownpad|Markdown Pad|Ⓜ️|tools|writer|Draft Markdown and preview plain text.
-csvviewer|CSV Helper|▦|tools|text|Paste CSV and inspect rows.
-jsonpretty|JSON Pretty|{ }|tools|text|Format and validate JSON.
-urlencoder|URL Toolbox|🔗|tools|text|Encode and decode URL text.
-base64desk|Base64 Desk|🔡|tools|text|Encode and decode Base64 text.
-loremipsum|Lorem Maker|📃|tools|writer|Generate placeholder paragraphs.
-clipboardnotes|Clipboard Book|📋|tools|journal|Keep snippets you reuse.
-scorekeeper|Score Keeper|🏆|games|score|Track scores for two players.
-tallycounter|Tally Counter|➕|tools|counter|Count taps with undo and reset.
-clicktest|Click Counter|🖱️|games|counter|Count clicks in a timed round.
-randomteam|Team Splitter|👥|tools|random|Split names into random teams.
-bracketmaker|Bracket Notes|🥇|tools|journal|Draft a simple tournament bracket.
-quizbuzzer|Quiz Buzzer|🚨|games|counter|Use a big buzzer for quiz nights.
-soundboard|Soundboard Pad|🔊|media|sound|Play simple generated tones.
-tonegenerator|Tone Lab|🎹|media|sound|Generate a tone using your browser.
-audiotest|Audio Test|🎧|media|sound|Test left and right audio channels.
-wavevisual|Wave Viewer|〰️|media|sound|Visualize a generated waveform.
-screenruler|Screen Ruler|📐|tools|lookup|Use a simple on-screen measuring guide.
-stopwatchnotes|Lap Notes|📝|tools|tracker|Record lap times with notes.
-recipebook|Recipe Book|🥣|tools|journal|Save your own recipes.
-mealplanner|Meal Planner|🍽️|tools|checklist|Plan meals for the week.
-waterlog|Water Log|💧|tools|tracker|Track cups of water as a simple tally.
-sleepnotes|Sleep Notes|🌙|tools|journal|Keep a sleep routine journal.
-weatherjournal|Weather Diary|🌦️|tools|journal|Record weather observations manually.
-travelmapnotes|Trip Notes|🧭|tools|journal|Plan places and trip notes.
-addressbook|Address Book|📇|tools|tracker|Keep a local list of contacts you enter.
-birthdaybook|Birthday Book|🎈|tools|tracker|Track birthdays and reminders.
-filelistmaker|File List Maker|🗂️|tools|text|Turn a pasted list into a numbered inventory.
-tablebuilder|Table Builder|▤|tools|text|Create a simple text table.
-regexnotes|Pattern Notebook|🧩|tools|text|Test simple text matching patterns.
-htmlscratch|HTML Scratchpad|🌐|tools|writer|Draft and preview safe HTML snippets as text.
-csscolors|CSS Color Notes|🖍️|tools|color|Collect CSS color values.
-unitcircle|Unit Circle|⭕|tools|lookup|Explore common angles and coordinates.
-randomfacts|Fact Shuffle|🎯|games|random|Shuffle a collection of fun prompts.
-questionjar|Question Jar|🫙|tools|random|Pick a conversation starter.
-complimentcards|Kind Words|💌|tools|random|Draw a positive message card.
-dailychallenge|Daily Challenge|🌟|games|random|Get a small creative challenge.`;
-const newApps = Object.fromEntries(miniAppRows.split("\n").map(line=>{const [id,name,icon,category,type,description]=line.split("|");return [id,{name,icon,category,type,description,installed:false}]}));
+  <main id="top" class="shell">
+    <div class="hero">
+      <span class="tag"><span class="tag-dot"></span> A small independent software hub</span>
+      <h1>Your next favourite app starts at <span class="gradient">NovaHub.</span></h1>
+      <p>A home for applications, experiments and projects. Browse what's available, grab a download and see what's being built next.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#apps">Explore applications ↓</a>
+        <a class="btn btn-secondary" href="https://github.com/GFDGF-arch/NovaHub" target="_blank" rel="noopener">View the GitHub repo ↗</a>
+      </div>
+    </div>
 
-const $=id=>document.getElementById(id);
-function requestDB(){
- return new Promise((resolve,reject)=>{
-  const req=indexedDB.open(DB_NAME,DB_VERSION);
-  req.onupgradeneeded=()=>{
-   const d=req.result;
-   if(!d.objectStoreNames.contains("meta"))d.createObjectStore("meta");
-   if(!d.objectStoreNames.contains("files")){const s=d.createObjectStore("files",{keyPath:"id",autoIncrement:true});s.createIndex("path","path",{unique:false});}
-  };
-  req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);
- });
-}
-function tx(store,mode="readonly"){return db.transaction(store,mode).objectStore(store)}
-function getMeta(key){return new Promise((res,rej)=>{let r=tx("meta").get(key);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-function setMeta(key,value){return new Promise((res,rej)=>{let r=tx("meta","readwrite").put(value,key);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
-function getAllFiles(){return new Promise((res,rej)=>{let r=tx("files").getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-function addFile(file){return new Promise((res,rej)=>{let r=tx("files","readwrite").add(file);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-function deleteFile(id){return new Promise((res,rej)=>{let r=tx("files","readwrite").delete(Number(id));r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
-function updateFile(id,changes){return new Promise(async(res,rej)=>{try{let s=tx("files","readwrite"),r=s.get(Number(id));r.onsuccess=()=>{s.put({...r.result,...changes});res()};r.onerror=()=>rej(r.error)}catch(e){rej(e)}})}
-async function boot(){
- try{db=await requestDB();const saved=await getMeta("settings");if(saved){if(saved.wallpaper)$("wallpaper").style.background=saved.wallpaper;if(saved.desktopColor)document.documentElement.style.setProperty("--desktop",saved.desktopColor);if(saved.iconPositions)iconPositions=saved.iconPositions;}
- const installed=await getMeta("installed");Object.keys(catalog).forEach(id=>{if(!apps[id])apps[id]={...catalog[id],installed:false};});Object.keys(newApps).forEach(id=>{if(!apps[id])apps[id]={...newApps[id]};});if(installed)Object.keys(installed).forEach(id=>{if(apps[id])apps[id].installed=installed[id]===true;});
- Object.entries(apps).forEach(([id,a])=>{a.description=a.description||appDescriptions[id]||`${a.name} is a NovaWare ${storeCategory(id)==="games"?"game":storeCategory(id)==="media"?"media tool":"desktop utility"}. Open it from the desktop to explore its features and tools.`;});
- // Core system applications cannot be uninstalled and are not listed in NovaStore.
- ["browser","filemanager","store","settings","about","terminal"].forEach(id=>{if(apps[id])apps[id].installed=true;});
- await seedFS();renderIcons();renderStart();updateClock();setInterval(()=>{updateClock();updateDesktopWidget()},1000);notify("Welcome to NovaWare 8.2","Your upgraded desktop is ready. Explore the new themes and notification center.");
- }catch(e){console.error(e);toast("NovaFS could not initialize. Browser storage may be disabled.");renderIcons();}
- setTimeout(()=>$("boot").style.display="none",1150);
-}
-async function seedFS(){
- const marker=await getMeta("seeded");if(marker)return;
- await addFile({name:"Welcome.txt",path:"/Documents/Welcome.txt",type:"text/plain",size:94,blob:new Blob(["Welcome to NovaWare 8.2!\\nYour files live in NovaFS and are saved in this browser. Have fun exploring."])});
- await addFile({name:"Readme.txt",path:"/Documents/Readme.txt",type:"text/plain",size:88,blob:new Blob(["NovaWare 8.2\\nDesktop mode: enabled\\nStorage: IndexedDB\\nNovaFS: persistent virtual file system"])});
- await setMeta("seeded",true);
-}
-function toast(msg){$("toast").textContent=msg;$("toast").style.display="block";clearTimeout(toast.timer);toast.timer=setTimeout(()=>$("toast").style.display="none",2400)}
-function renderIcons(){
- $("icons").innerHTML="";
- Object.keys(apps).forEach((id,index)=>{if(!apps[id].installed)return;const el=document.createElement("div");el.className="icon";el.dataset.id=id;
- el.innerHTML=`<span class="emoji">${apps[id].icon}</span><span class="name">${escapeHTML(apps[id].name)}</span>`;
- const p=iconPositions[id];el.style.left=(p?.x??12+Math.floor(index/7)*92)+"px";el.style.top=(p?.y??10+(index%7)*88)+"px";
- el.addEventListener("click",()=>{document.querySelectorAll(".icon").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")});
- el.addEventListener("dblclick",()=>openApp(id));makeIconDraggable(el);$("icons").appendChild(el);
- });
- renderStart();
-}
-function makeIconDraggable(el){let sx,sy,ox,oy,moved=false;el.addEventListener("pointerdown",e=>{if(e.button!==0)return;sx=e.clientX;sy=e.clientY;ox=parseFloat(el.style.left);oy=parseFloat(el.style.top);moved=false;el.setPointerCapture(e.pointerId);
- const move=ev=>{let dx=ev.clientX-sx,dy=ev.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>5)moved=true;if(moved){el.style.left=Math.max(0,Math.min(innerWidth-84,ox+dx))+"px";el.style.top=Math.max(0,Math.min(innerHeight-120,oy+dy))+"px"}};
- const stop=()=>{if(moved)iconPositions[el.dataset.id]={x:parseFloat(el.style.left),y:parseFloat(el.style.top)};el.removeEventListener("pointermove",move);el.removeEventListener("pointerup",stop);saveSettings()};el.addEventListener("pointermove",move);el.addEventListener("pointerup",stop);});}
-function renderStart(){$("startItems").innerHTML=Object.keys(apps).filter(id=>apps[id].installed&&!["store","about"].includes(id)).map(id=>`<button class="menuitem" onclick="openApp('${id}')">${apps[id].icon} ${escapeHTML(apps[id].name)}</button>`).join("")}
-function toggleStart(){$("startMenu").style.display=$("startMenu").style.display==="block"?"none":"block"}
-function filterStart(q){const v=(q||"").toLowerCase();document.querySelectorAll("#startItems .menuitem").forEach(b=>b.style.display=b.textContent.toLowerCase().includes(v)?"block":"none")}
-function refreshDesktop(){renderIcons();toast("Desktop refreshed")}
-$("desktop").addEventListener("contextmenu",e=>{if(e.target.closest(".icon"))return;e.preventDefault();$("desktopContext").style.display="block";$("desktopContext").style.left=Math.min(e.clientX,innerWidth-190)+"px";$("desktopContext").style.top=Math.min(e.clientY,innerHeight-150)+"px"});
-document.addEventListener("pointerdown",e=>{if(!e.target.closest("#desktopContext"))$("desktopContext").style.display="none";if(!e.target.closest("#startMenu")&&!e.target.closest("#start"))$("startMenu").style.display="none"});
-// Secret achievement: open every application currently installed in NovaWare.
-const novaOpenedApps = new Set(JSON.parse(localStorage.getItem("novaOpenedApps_v1") || "[]"));
-let novaEasterEggUnlocked = localStorage.getItem("novaEasterEggUnlocked_v1") === "yes";
-function recordAppVisit(id){
- novaOpenedApps.add(id);
- localStorage.setItem("novaOpenedApps_v1",JSON.stringify([...novaOpenedApps]));
- const installedIds=Object.keys(apps).filter(appId=>apps[appId].installed);
- const remaining=installedIds.filter(appId=>!novaOpenedApps.has(appId));
- if(!novaEasterEggUnlocked && installedIds.length>0 && remaining.length===0){
-  novaEasterEggUnlocked=true;
-  localStorage.setItem("novaEasterEggUnlocked_v1","yes");
-  setTimeout(showNovaEasterEggError,350);
- }
-}
-function showNovaEasterEggError(){
- if($("novaEasterEggDialog"))return;
- const overlay=document.createElement("div");overlay.className="nova-easter-overlay";overlay.id="novaEasterEggDialog";
- overlay.innerHTML=`<div class="nova-easter-error" role="alertdialog" aria-modal="true" aria-labelledby="novaEasterTitle"><div class="nova-easter-title" id="novaEasterTitle">⚠ NovaWare - System Error</div><div class="nova-easter-body"><div class="error-icon">💥</div><div><b>A very unexpected error has occurred.</b><p>Error code: 0xNOVA-0001</p><p>You opened EVERY installed application.</p><p>NovaWare has run out of places to hide its secrets.</p><p><b>Congratulations. You found the easter egg!</b></p></div></div><div class="nova-easter-actions"><button onclick="closeNovaEasterEgg()">OK</button></div></div>`;
- document.body.appendChild(overlay);
-}
-function closeNovaEasterEgg(){const dialog=$("novaEasterEggDialog");if(dialog)dialog.remove();toast("Secret discovered: The Everything Error!")}
+    <section id="apps">
+      <div class="section-heading">
+        <div>
+          <h2>Applications</h2>
+          <p>Software currently featured on NovaHub.</p>
+        </div>
+        <span class="tag">1 featured app</span>
+      </div>
 
-function openApp(id){
- if(!apps[id]||!apps[id].installed)return;$("startMenu").style.display="none";
- recordAppVisit(id);
- let win=$("win-"+id);if(win){win.style.display="flex";win.style.zIndex=++z;return}
- win=document.createElement("div");win.className="window";win.id="win-"+id;win.style.zIndex=++z;
- win.innerHTML=`<div class="titlebar"><span>${apps[id].icon} ${escapeHTML(apps[id].name)}</span><div class="title-actions"><button title="Minimize" onclick="minimizeApp('${id}')">_</button><button title="Maximize" onclick="maximizeApp('${id}')">□</button><button title="Close" onclick="closeApp('${id}')">X</button></div></div><div class="content">${getContent(id)}</div><div class="statusbar" id="status-${id}">Ready</div>`;
- $("windows").appendChild(win);makeWindowDraggable(win);win.addEventListener("pointerdown",()=>{win.style.zIndex=++z});addTaskButton(id);initApp(id);
-}
-function closeApp(id){const w=$("win-"+id);if(w)w.remove();$("task-"+id)?.remove();if(id==="snake")stopSnake();if(id==="pong")stopPong();if(id==="breakout")stopBreakout();if(id==="stopwatch")stopWatch();if(id==="minesweeper")clearInterval(mineInterval);if(id==="music"&&audioURL){URL.revokeObjectURL(audioURL);audioURL=null}if(id==="video"&&videoURL){URL.revokeObjectURL(videoURL);videoURL=null}}
-function minimizeApp(id){const w=$("win-"+id);if(w)w.style.display="none"}
-function maximizeApp(id){const w=$("win-"+id);if(w)w.classList.toggle("maximized")}
-function addTaskButton(id){let b=document.createElement("button");b.className="taskbutton";b.id="task-"+id;b.textContent=apps[id].icon+" "+apps[id].name;b.onclick=()=>{let w=$("win-"+id);if(w){w.style.display=w.style.display==="none"?"flex":"none";w.style.zIndex=++z}};$("taskbuttons").appendChild(b)}
-function makeWindowDraggable(win){const bar=win.querySelector(".titlebar");let sx,sy,ox,oy;bar.addEventListener("pointerdown",e=>{if(e.target.closest("button")||win.classList.contains("maximized"))return;sx=e.clientX;sy=e.clientY;ox=win.offsetLeft;oy=win.offsetTop;bar.setPointerCapture(e.pointerId);const move=ev=>{win.style.left=Math.max(0,Math.min(innerWidth-win.offsetWidth,ox+ev.clientX-sx))+"px";win.style.top=Math.max(0,Math.min(innerHeight-win.offsetHeight-38,oy+ev.clientY-sy))+"px"};const stop=()=>{bar.removeEventListener("pointermove",move);bar.removeEventListener("pointerup",stop)};bar.addEventListener("pointermove",move);bar.addEventListener("pointerup",stop)})}
-function getContent(id){
- if(newApps[id])return miniAppContent(id);
- if(id==="browser")return getBrowserContent();
- if(id==="store")return `<div class="store-top"><h2>🛍 NovaStore</h2><input class="store-search" id="storeSearch" placeholder="Search apps and games..." oninput="renderStore()"><button onclick="storeSection('home')">Home</button></div><div class="store-shell"><aside class="store-side"><b>Browse</b><button id="store-nav-home" class="active" onclick="storeSection('home')">🏠 Home</button><button id="store-nav-apps" onclick="storeSection('apps')">▦ Apps</button><button id="store-nav-games" onclick="storeSection('games')">🎮 Games</button><button id="store-nav-installed" onclick="storeSection('installed')">✓ Installed</button><hr><b>Categories</b><button onclick="storeSection('media')">♫ Media</button><button onclick="storeSection('tools')">⚙ Tools</button><button onclick="storeSection('games')">♟ Games</button></aside><main class="store-main"><div id="storeFeature"></div><div class="store-heading"><h3 id="storeTitle">Recommended for you</h3><span class="small" id="storeCount"></span></div><div id="storeDetail"></div><div class="storegrid" id="storeApps"></div><p id="storeStatus" class="small">Welcome to NovaStore!</p></main></div>`;
- if(id==="about")return `<h2>💻 About NovaWare</h2><div class="panel"><h2>NovaWare 8.2</h2><p>Welcome to NovaWare — your tiny desktop operating system inside a browser.</p><hr><p><b>Operating system:</b> NovaWare Desktop</p><p><b>Version:</b> 8.2</p><p><b>Developer:</b> Nova</p><p><b>Storage engine:</b> IndexedDB (persistent NovaFS)</p><p><b>Desktop shell:</b> Windows 98 inspired</p><p><b>Applications:</b> NovaStore, NovaTerminal, NovaPaint, NovaMP3, NovaMP4, games and utilities</p><p><b>Status:</b> Running</p></div>`;
- if(id==="filemanager")return `<h2>📁 NovaFS Explorer</h2><div class="toolbar"><button onclick="refreshFiles()">↻ Refresh</button><button onclick="newFolder()">📁 New folder</button><button onclick="newTextFile()">📄 New text file</button><label><button onclick="$('fsUpload').click()">⬆ Import files</button><input id="fsUpload" type="file" multiple hidden onchange="uploadFiles(this.files)"></label><button onclick="exportFS()">Backup FS</button><label><button onclick="$('fsRestore').click()">Restore backup</button><input id="fsRestore" type="file" accept=".json,application/json" hidden onchange="restoreFS(this.files[0])"></label></div><div class="panel"><b>Location:</b> <span id="fsPath">/</span><div id="fsList"></div></div><p class="small">NovaFS saves files and folders in this browser using IndexedDB. Export a backup to move them elsewhere.</p>`;
- if(id==="music")return `<h2>🎵 NovaMP3</h2><div class="panel"><p>Open audio files from your computer or NovaFS.</p><input type="file" id="musicFile" accept="audio/*" multiple><p id="musicName">No music loaded.</p><audio id="musicPlayer" controls></audio><div class="toolbar"><button onclick="changeTrack(-1)">⏮ Previous</button><button onclick="changeTrack(1)">Next ⏭</button><button onclick="saveCurrentMedia('audio')">Save current to NovaFS</button></div><div id="musicList"></div></div>`;
- if(id==="video")return `<h2>🎬 NovaMP4</h2><div class="panel"><p>Select a local video:</p><input type="file" id="videoFile" accept="video/*"><p id="videoName">No video loaded.</p><video id="videoPlayer" controls></video><button onclick="saveCurrentMedia('video')">Save current to NovaFS</button></div>`;
- if(id==="calculator")return `<h2>🧮 Calculator</h2><input id="calcDisplay" readonly style="width:100%;font-size:22px"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:10px">${["7","8","9","/","4","5","6","*","1","2","3","-","0",".","=","+","C"].map(x=>`<button onclick="calc('${x}')">${x}</button>`).join("")}</div>`;
- if(id==="notepad")return `<h2>📝 NovaNotepad</h2><div class="toolbar"><button onclick="saveNote()">Save to NovaFS</button><button onclick="downloadNote()">Export .txt</button><button onclick="$('note').value=''">Clear</button></div><input id="noteName" value="Untitled.txt" style="width:100%;margin-bottom:6px"><textarea id="note" placeholder="Start writing..."></textarea>`;
- if(id==="paint")return `<h2>🎨 NovaPaint</h2><div class="toolbar"><input type="color" id="paintColor" value="#000000"><button onclick="clearPaint()">Clear</button><button onclick="savePaint()">Save to NovaFS</button><button onclick="exportPaint()">Export PNG</button></div><canvas id="paintCanvas" width="520" height="320" style="background:white;touch-action:none;cursor:crosshair"></canvas>`;
- if(id==="calendar")return `<h2>📅 NovaCalendar</h2><div class="toolbar"><button onclick="changeCalendar(-1)">◀ Previous</button><b id="calendarLabel"></b><button onclick="changeCalendar(1)">Next ▶</button><button onclick="calendarToday()">Today</button></div><div id="calendarGrid" class="panel" style="display:grid;grid-template-columns:repeat(7,minmax(28px,1fr));gap:5px;text-align:center"></div><p id="calendarSelected" class="small">Select a date to view it.</p>`;
- if(id==="clock")return `<h2>🕒 Nova World Clock</h2><div class="panel"><h1 id="localClock">--:--:--</h1><p>Your local time</p><hr><div id="worldClocks"></div></div>`;
- if(id==="reader")return `<h2>📖 NovaReader</h2><div class="toolbar"><label><button onclick="$('readerFile').click()">Open text file</button><input id="readerFile" type="file" accept=".txt,.md,.json,.csv,text/*" hidden onchange="loadReaderFile(this.files[0])"></label><button onclick="saveReaderText()">Save to NovaFS</button><button onclick="downloadReaderText()">Export</button></div><input id="readerName" value="Reading.txt" style="width:100%;margin:6px 0"><textarea id="readerText" placeholder="Open a text file or start reading here..." style="width:100%;height:260px"></textarea>`;
- if(id==="soundrec")return `<h2>🎙️ Nova Sound Recorder</h2><div class="panel"><p id="recStatus">Ready to record. Your browser may ask for microphone permission.</p><h1 id="recTimer">00:00</h1><div class="toolbar"><button id="recStart" onclick="startRecording()">● Record</button><button id="recStop" onclick="stopRecording()" disabled>■ Stop</button></div><audio id="recPlayback" controls></audio><p><button onclick="saveRecording()" id="recSave" disabled>Save recording to NovaFS</button></p></div>`;
- if(id==="system")return `<h2>📊 Nova System Monitor</h2><div class="panel"><p><b>System:</b> NovaWare 8.2</p><p><b>Session uptime:</b> <span id="sysUptime">—</span></p><p><b>Installed applications:</b> <span id="sysApps">—</span></p><p><b>NovaFS files:</b> <span id="sysFiles">—</span></p><p><b>Browser storage:</b> <span id="sysStorage">Checking...</span></p><p><b>Screen:</b> <span id="sysScreen">—</span></p><button onclick="refreshSystemInfo()">↻ Refresh information</button></div>`;
- if(id==="solitaire")return `<div class="sol-window"><div class="sol-menubar"><button onclick="solMenu('game')">Game</button><button onclick="solMenu('options')">Options</button><button onclick="solMenu('help')">Help</button></div><div id="solMenuPanel" style="display:none;background:#c0c0c0;color:#111;padding:6px;margin-bottom:8px"></div><div id="solitaireBoard"></div><div class="sol-stats"><span id="solScore">Score: 0</span><span id="solTime">Time: 00:00</span><span id="solMoves">Moves: 0</span></div></div><p id="solitaireStatus" class="small">Press and hold a face-up card, then drag it onto a valid column or foundation. Tap face-down cards to turn them over.</p>`;
- if(id==="stopwatch")return `<h2>⏱ NovaStopwatch</h2><h1 id="watchTime">00:00.0</h1><button onclick="startWatch()">Start</button> <button onclick="stopWatch()">Stop</button> <button onclick="resetWatch()">Reset</button>`;
- if(id==="settings")return `<h2>⚙️ Display settings</h2><div class="panel"><b>Desktop themes</b><div class="theme-row"><button class="theme-chip" style="background:linear-gradient(135deg,#008080,#005080)" onclick="applyTheme('classic')">Classic</button><button class="theme-chip" style="background:linear-gradient(135deg,#000080,#168bd0)" onclick="applyTheme('ocean')">Ocean</button><button class="theme-chip" style="background:linear-gradient(135deg,#563078,#b45c9c)" onclick="applyTheme('purple')">Purple</button><button class="theme-chip" style="background:linear-gradient(135deg,#315b32,#8dbb54)" onclick="applyTheme('forest')">Forest</button></div><hr><p>Desktop background color</p><input type="color" id="deskColor" value="#008080"><button onclick="applyDeskColor()">Apply</button><hr><p>Wallpaper image</p><input type="file" id="wallFile" accept="image/*"><button onclick="applyWallpaper()">Set wallpaper</button><button onclick="clearWallpaper()">Clear wallpaper</button><hr><button onclick="resetLayout()">Reset icon positions</button><button onclick="saveSettings()">Save settings</button></div>`;
- if(id==="terminal")return `<h2>⌨️ NovaTerminal</h2><div class="panel" style="background:#101010;color:#8cff8c;font-family:monospace;height:260px;overflow:auto" id="termOutput">NovaWare Terminal [Version 7.0]<br>Type <b>help</b> to see commands.<br></div><input id="termInput" style="width:100%;font-family:monospace" placeholder="Enter command..." onkeydown="if(event.key==='Enter')runTerminal()"><p class="small">Safe virtual commands only — this is not your computer's command prompt.</p>`;
- if(id==="minesweeper")return `<h2>💣 NovaSweeper</h2><select id="difficulty" onchange="newMineGame()"><option value="8,8,10">Beginner</option><option value="12,10,20">Intermediate</option><option value="16,12,40">Expert</option></select><p>Mines: <span id="mineCount">10</span> | Time: <span id="mineTime">0</span></p><p id="mineStatus">Good luck!</p><div id="mineBoard"></div><button onclick="newMineGame()">New game</button>`;
- if(id==="snake")return `<h2>🐍 Snake</h2><p>Use arrow keys to move.</p><canvas id="snakeCanvas" width="300" height="300"></canvas><p>Score: <span id="snakeScore">0</span></p><button onclick="startSnake()">Start / Restart</button>`;
- if(id==="pong")return `<h2>🏓 Pong</h2><p>Use W and S to move.</p><canvas id="pongCanvas" width="400" height="250"></canvas><p id="pongScore">0 - 0</p><button onclick="startPong()">Start / Restart</button>`;
- if(id==="breakout")return `<h2>🧱 Breakout</h2><p>Use left and right arrows.</p><canvas id="breakCanvas" width="400" height="300"></canvas><p id="breakStatus">Ready!</p><button onclick="startBreakout()">Start / Restart</button>`;
- return `<h2>${apps[id]?.name||"Application"}</h2><p>This application is not available.</p>`;
-}
-function miniAppContent(id){
- const a=newApps[id],hue=[...id].reduce((n,c)=>n+c.charCodeAt(0),0)%360;
- const head=`<div class="panel"><div style="font-size:34px">${a.icon}</div><h2>${escapeHTML(a.name)}</h2><p>${escapeHTML(a.description)}</p>`;
- const unique='';
- const input=`<textarea id="mini-${id}-input" style="width:100%;height:110px" placeholder="Type or paste here..."></textarea>`;
- let body='';
- switch(a.type){
- case 'journal':case 'writer':body=`<input id="mini-${id}-title" placeholder="Title" style="width:100%;margin:6px 0">${input}<div class="toolbar"><button onclick="miniSave('${id}')">Save to NovaFS</button><button onclick="miniDownload('${id}')">Export .txt</button><button onclick="miniClear('${id}')">Clear</button></div>`;break;
- case 'checklist':body=`<input id="mini-${id}-item" placeholder="New item"><button onclick="miniAddItem('${id}')">Add item</button><ul id="mini-${id}-list"></ul><button onclick="miniClearList('${id}')">Clear list</button>`;break;
- case 'tracker':body=`<input id="mini-${id}-item" placeholder="Add a record"><button onclick="miniAddItem('${id}')">Add</button><ul id="mini-${id}-list"></ul><h3>Total: <span id="mini-${id}-count">0</span></h3><button onclick="miniClearList('${id}')">Reset</button>`;break;
- case 'timer':body=`<h1 id="mini-${id}-display">00:00</h1><input id="mini-${id}-minutes" type="number" min="1" max="180" value="5" style="width:90px"> minutes <div class="toolbar"><button onclick="miniTimerStart('${id}')">Start</button><button onclick="miniTimerPause('${id}')">Pause</button><button onclick="miniTimerReset('${id}')">Reset</button></div><p id="mini-${id}-status">Ready</p>`;break;
- case 'math':case 'convert':body=`<input id="mini-${id}-a" type="number" placeholder="First value"><input id="mini-${id}-b" type="number" placeholder="Second value"><select id="mini-${id}-op"><option value="add">Add</option><option value="sub">Subtract</option><option value="mul">Multiply</option><option value="div">Divide</option><option value="percent">A as % of B</option></select><button onclick="miniCalculate('${id}')">Calculate</button><h2 id="mini-${id}-result">Result appears here</h2>`;break;
- case 'counter':case 'score':body=`<h1 id="mini-${id}-count">0</h1><div class="toolbar"><button onclick="miniCount('${id}',1)">＋ Add</button><button onclick="miniCount('${id}',-1)">－ Subtract</button><button onclick="miniCount('${id}',0)">Reset</button></div>`;break;
- case 'random':body=`<textarea id="mini-${id}-input" style="width:100%;height:100px" placeholder="Enter options, one per line (optional)"></textarea><button onclick="miniRandom('${id}')">Pick randomly</button><h2 id="mini-${id}-result">Ready to pick!</h2>`;break;
- case 'color':body=`<label>Choose a color <input id="mini-${id}-color" type="color" value="#2878c8" oninput="miniColor('${id}')"></label><div id="mini-${id}-swatch" style="height:90px;background:#2878c8;margin:12px 0;border:2px inset #aaa"></div><input id="mini-${id}-hex" value="#2878c8" readonly><button onclick="GenCopyMini('${id}')">Copy HEX</button>`;break;
- case 'text':body=`${input}<div class="toolbar"><button onclick="miniTextAction('${id}','upper')">UPPERCASE</button><button onclick="miniTextAction('${id}','lower')">lowercase</button><button onclick="miniTextAction('${id}','title')">Title Case</button><button onclick="miniTextAction('${id}','trim')">Clean spaces</button><button onclick="miniTextAction('${id}','count')">Count text</button></div><p id="mini-${id}-result"></p>`;break;
- case 'quiz':{const q=miniQuizBankFor(id)[0];body=`<div class="panel"><div style="font-size:28px">${id==='spellingbee'?'🐝':id==='geographyquiz'?'🗺️':'❔'}</div><h3 id="mini-${id}-question">${escapeHTML(q[0])}</h3><input id="mini-${id}-answer" placeholder="${id==='spellingbee'?'Type the correctly spelled word':'Your answer'}" autocomplete="off" onkeydown="if(event.key==='Enter')miniQuiz('${id}')"><div class="toolbar"><button onclick="miniQuiz('${id}')">Check answer</button><button onclick="miniNextQuiz('${id}')">Next question →</button></div><p id="mini-${id}-result" aria-live="polite"></p><small id="mini-${id}-progress">Question 1</small></div>`;break;}
- case 'date':body=`<label>Start date <input id="mini-${id}-a" type="date"></label><label>End date <input id="mini-${id}-b" type="date"></label><button onclick="miniDateCalc('${id}')">Calculate days</button><h2 id="mini-${id}-result"></h2>`;break;
- case 'flashcards':body=`<input id="mini-${id}-front" placeholder="Front of card"><input id="mini-${id}-back" placeholder="Back of card"><button onclick="miniAddCard('${id}')">Add flashcard</button><div id="mini-${id}-cards"></div>`;break;
- case 'typing':body=`<p id="mini-${id}-prompt">The quick brown fox jumps over the lazy dog.</p><textarea id="mini-${id}-input" placeholder="Type the sentence here..."></textarea><button onclick="miniTypingCheck('${id}')">Check speed & accuracy</button><p id="mini-${id}-result"></p>`;break;
- case 'game':body=`<h2 id="mini-${id}-game">Ready?</h2><button onclick="miniGame('${id}')">Play / New round</button><p id="mini-${id}-result"></p>`;break;
- case 'creative':body=`<input id="mini-${id}-input" placeholder="Enter your text"><button onclick="miniCreative('${id}')">Create</button><pre id="mini-${id}-result" style="white-space:pre-wrap;background:white;padding:10px;color:#111"></pre>`;break;
- case 'sound':body=`<label>Frequency <input id="mini-${id}-freq" type="range" min="100" max="1200" value="440" oninput="$('mini-${id}-hz').textContent=this.value"></label> <span id="mini-${id}-hz">440</span> Hz <button onclick="miniTone('${id}')">Play tone</button><button onclick="miniToneStop('${id}')">Stop</button><p id="mini-${id}-result">Uses browser audio.</p>`;break;
- case 'lookup':body=`<input id="mini-${id}-input" placeholder="Enter a value or topic"><button onclick="miniLookup('${id}')">Explore</button><div id="mini-${id}-result" class="panel">${escapeHTML(a.description)}</div>`;break;
- }
- return head+unique+body+'</div><p class="small">NovaWare mini-app · Dedicated workspace and tool panel. Your work stays in this browser unless you export it.</p>';
-}
-async function miniUniqueSave(id){const e=$(`unique-${id}`);if(!e)return;const a=newApps[id],value=e.value;const name=(a.name.replace(/[^a-z0-9 _-]/gi,'').trim()||id)+' Workspace.txt';await addFile({name,path:'/Documents/'+name,type:'text/plain',size:value.length,blob:new Blob([value],{type:'text/plain'})});toast(a.name+' workspace saved to NovaFS')}
-function miniUniqueExport(id){const a=newApps[id],v=$(`unique-${id}`)?.value||'';downloadBlob(new Blob([v],{type:'text/plain'}),(a.name||id)+'-workspace.txt')}
-function miniUniqueClear(id){const e=$(`unique-${id}`);if(e)e.value=''}
-const miniTimers={};const miniAudio={};
-const quizBanks={
- spellingbee:[['Spell the animal that makes honey.','bee'],['Spell the yellow fruit that monkeys are often shown eating.','banana'],['Spell the opposite of night.','day'],['Spell the season after summer.','autumn'],['Spell the thing you read, with pages and a cover.','book']],
- geographyquiz:[['What is the capital of Portugal?','lisbon'],['Which is the largest ocean?','pacific'],['What country is shaped like a boot?','italy'],['Which continent is the Sahara Desert in?','africa'],['What is the capital of Japan?','tokyo']],
- triviaquiz:[['Which animal is known as the king of the jungle?','lion'],['How many sides does a triangle have?','3'],['Which planet has rings that are easy to see?','saturn'],['What do bees make?','honey'],['Which ocean is between Africa and Australia?','indian']],
- mathdrill:[['What is 9 × 6?','54'],['What is 72 ÷ 8?','9'],['What is 125 + 75?','200'],['What is 15 − 8?','7'],['What is 12 × 12?','144']]
-};
-const quizIndexes={};
-function miniQuizBankFor(id){return quizBanks[id]||quizBanks.triviaquiz;}
-function miniSave(id){const a=newApps[id],v=$(`mini-${id}-input`)?.value||'',name=($(`mini-${id}-title`)?.value||a.name)+'.txt';addFile({name,path:'/Documents/'+name,type:'text/plain',size:v.length,blob:new Blob([v],{type:'text/plain'})}).then(()=>toast(name+' saved to NovaFS'))}
-function miniDownload(id){const v=$(`mini-${id}-input`)?.value||'';downloadBlob(new Blob([v],{type:'text/plain'}),(newApps[id].name||'NovaWare')+'.txt')}
-function miniClear(id){const e=$(`mini-${id}-input`);if(e)e.value=''}
-function miniAddItem(id){const e=$(`mini-${id}-item`),list=$(`mini-${id}-list`);if(!e?.value.trim()||!list)return;const li=document.createElement('li');li.innerHTML=`<label><input type="checkbox"> ${escapeHTML(e.value.trim())}</label> <button onclick="this.parentElement.remove();miniUpdateCount('${id}')">×</button>`;list.appendChild(li);e.value='';miniUpdateCount(id)}
-function miniUpdateCount(id){const n=$(`mini-${id}-list`)?.children.length||0;const c=$(`mini-${id}-count`);if(c)c.textContent=n}
-function miniClearList(id){const l=$(`mini-${id}-list`);if(l)l.innerHTML='';miniUpdateCount(id)}
-function miniCount(id,d){const e=$(`mini-${id}-count`);if(!e)return;let n=Number(e.textContent)||0;e.textContent=d===0?0:n+d}
-function miniCalculate(id){const a=Number($(`mini-${id}-a`).value),b=Number($(`mini-${id}-b`).value),op=$(`mini-${id}-op`).value;let r=op==='add'?a+b:op==='sub'?a-b:op==='mul'?a*b:op==='div'?a/b:100*a/b;$(`mini-${id}-result`).textContent=Number.isFinite(r)?'Result: '+Number(r.toFixed(6)):'Please enter valid values.'}
-function miniRandom(id){const lines=($(`mini-${id}-input`)?.value||'').split(/\n/).map(x=>x.trim()).filter(Boolean);const options=lines.length?lines:['Heads','Tails'];$(`mini-${id}-result`).textContent=options[Math.floor(Math.random()*options.length)]}
-function miniColor(id){const v=$(`mini-${id}-color`).value;$(`mini-${id}-swatch`).style.background=v;$(`mini-${id}-hex`).value=v}
-function GenCopyMini(id){GenUICopy($(`mini-${id}-hex`).value)}
-function GenUICopy(v){if(navigator.clipboard?.writeText)navigator.clipboard.writeText(v).then(()=>toast('Copied!')).catch(()=>toast(v));else toast(v)}
-function miniTextAction(id,act){const e=$(`mini-${id}-input`),v=e.value;if(act==='upper')e.value=v.toUpperCase();if(act==='lower')e.value=v.toLowerCase();if(act==='title')e.value=v.replace(/\b\w/g,c=>c.toUpperCase());if(act==='trim')e.value=v.split('\n').map(x=>x.trim().replace(/\s+/g,' ')).filter(Boolean).join('\n');if(act==='count')$(`mini-${id}-result`).textContent=`${v.trim()?v.trim().split(/\s+/).length:0} words · ${v.length} characters · ${v.split('\n').length} lines`}
-function miniQuiz(id){const bank=miniQuizBankFor(id),q=bank[quizIndexes[id]||0],v=$(`mini-${id}-answer`).value.trim().toLowerCase().replace(/[.!?]/g,'');const result=$(`mini-${id}-result`);if(!v){result.textContent='Type an answer first.';return}result.textContent=v===q[1]?'Correct! 🎉':'Not quite — try again!';result.style.color=v===q[1]?'#08752b':'#a12a20'}
-function miniNextQuiz(id){const bank=miniQuizBankFor(id);quizIndexes[id]=((quizIndexes[id]||0)+1)%bank.length;const q=bank[quizIndexes[id]];$(`mini-${id}-question`).textContent=q[0];$(`mini-${id}-answer`).value='';$(`mini-${id}-result`).textContent='';$(`mini-${id}-progress`).textContent=`Question ${quizIndexes[id]+1} of ${bank.length}`}
-function miniDateCalc(id){const a=new Date($(`mini-${id}-a`).value),b=new Date($(`mini-${id}-b`).value);const n=Math.round((b-a)/86400000);$(`mini-${id}-result`).textContent=Number.isFinite(n)?Math.abs(n)+' days'+(n<0?' (end date is earlier)':''):'Choose both dates.'}
-function miniAddCard(id){const f=$(`mini-${id}-front`).value,b=$(`mini-${id}-back`).value;if(!f||!b)return toast('Fill in both sides first');const d=document.createElement('details');d.innerHTML=`<summary>${escapeHTML(f)}</summary><p>${escapeHTML(b)}</p>`;$(`mini-${id}-cards`).appendChild(d);$(`mini-${id}-front`).value='';$(`mini-${id}-back`).value=''}
-function miniTypingCheck(id){const p=$(`mini-${id}-prompt`).textContent,v=$(`mini-${id}-input`).value,correct=[...v].filter((c,i)=>c===p[i]).length;$(`mini-${id}-result`).textContent=`${Math.round(correct/Math.max(p.length,1)*100)}% character accuracy · ${v.length} characters typed`}
-function miniGame(id){const n=Math.floor(Math.random()*100)+1;$(`mini-${id}-game`).textContent='Your number: '+n;$(`mini-${id}-result`).textContent='New round generated. Try to beat your previous score!'}
-function miniCreative(id){const v=$(`mini-${id}-input`).value||'NOVA';$(`mini-${id}-result`).textContent=v.toUpperCase().split('').join(' ✦ ')}
-function miniTone(id){miniToneStop(id);const C=window.AudioContext||window.webkitAudioContext;if(!C)return toast('Audio is not supported in this browser');const c=new C(),o=c.createOscillator(),g=c.createGain();o.frequency.value=Number($(`mini-${id}-freq`).value);g.gain.value=.08;o.connect(g);g.connect(c.destination);o.start();miniAudio[id]={c,o}}
-function miniToneStop(id){const a=miniAudio[id];if(a){try{a.o.stop();a.c.close()}catch{}delete miniAudio[id]}}
-function miniTimerStart(id){if(miniTimers[id]?.interval)return;let t=miniTimers[id]?.left??Number($(`mini-${id}-minutes`).value||1)*60;const draw=()=>{$(`mini-${id}-display`).textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')};draw();miniTimers[id]={left:t,interval:setInterval(()=>{t--;miniTimers[id].left=t;draw();if(t<=0){clearInterval(miniTimers[id].interval);miniTimers[id].interval=null;$(`mini-${id}-status`).textContent='Time is up!'}},1000)};$(`mini-${id}-status`).textContent='Running'}
-function miniTimerPause(id){if(miniTimers[id]?.interval){clearInterval(miniTimers[id].interval);miniTimers[id].interval=null;$(`mini-${id}-status`).textContent='Paused'}}
-function miniTimerReset(id){miniTimerPause(id);const t=Number($(`mini-${id}-minutes`).value||1)*60;miniTimers[id]={left:t};$(`mini-${id}-display`).textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');$(`mini-${id}-status`).textContent='Ready'}
-function miniLookup(id){const v=$(`mini-${id}-input`).value.trim();$(`mini-${id}-result`).textContent=v?`Your entry: ${v}\n\nNovaWare keeps this as a local note. You can copy it into NovaReader or NovaNotepad.`:'Enter something to explore.'}
+      <article class="app-card">
+        <div class="app-icon" aria-hidden="true">Nw</div>
+        <div class="app-info">
+          <h3>NovaWare <span style="color:#9db6dd;font-size:13px;font-weight:500">9.2</span></h3>
+          <p>A desktop application by Nova. Available for Windows.</p>
+          <div class="pills">
+            <span class="pill">Windows</span>
+            <span class="pill">Desktop app</span>
+            <span class="pill status">Release page needed</span>
+          </div>
+        </div>
+        <div class="app-action">
+          <!-- Replace the href with the direct GitHub Release asset URL when you upload NovaWare.exe. -->
+          <a class="btn btn-primary" href="https://github.com/GFDGF-arch/NovaHub/releases" target="_blank" rel="noopener">Get NovaWare ↗</a>
+        </div>
+      </article>
+      <p class="download-note">The button currently opens the NovaHub Releases page. Upload NovaWare.exe as a GitHub Release asset to make it downloadable there.</p>
 
-let novaBrowserQuery="",novaBrowserPage=1,novaBrowserHistory=[],novaBrowserHistoryIndex=-1,novaBrowserFilter="all",novaBrowserBookmarks=[];
-function getBrowserContent(){return `<div class="nova-browser"><div class="browser-menubar"><button onclick="toast('File menu · New window · Close')">File</button><button onclick="toast('Edit menu · Copy · Select all')">Edit</button><button onclick="toast('View menu · Text size · Refresh')">View</button><button onclick="browserHome()">Go</button><button onclick="browserShowBookmarks()">Favorites</button><button onclick="toast('NovaBrowser Help · Offline NovaNet browser')">Help</button></div><div class="browser-toolbar"><button title="Back" onclick="browserBack()">◀</button><button title="Forward" onclick="browserForward()">▶</button><button title="Stop" onclick="toast('Nothing to stop — NovaNet is offline')">■</button><button title="Home" onclick="browserHome()">⌂</button><button title="Reload" onclick="browserSearch()">↻</button><span class="browser-address-label">Address</span><input id="browserAddress" class="browser-address" placeholder="novanet://home" onkeydown="if(event.key==='Enter')browserGoAddress()"><button onclick="browserGoAddress()">Go</button></div><div class="browser-shortcuts"><button onclick="browserHome()">🏠 Home</button><button onclick="browserQuickSearch('NovaWare')">🖥 NovaWare</button><button onclick="browserQuickSearch('retro computers')">💾 Retro</button><button onclick="browserQuickSearch('video games')">🎮 Games</button><button onclick="browserShowBookmarks()">★ Favorites</button></div><div id="browserView"><div class="browser-brand"><div class="logo">NOVA<span>NET</span></div><div class="browser-brand-sub">THE WORLD'S SMALLEST OFFLINE NETWORK</div><div class="browser-search-panel"><b>Find something on NovaNet</b><form class="browser-search" onsubmit="event.preventDefault();browserSearch()"><input id="browserQuery" placeholder="Type here to search..." autocomplete="off"><button type="submit">Search</button></form><div class="browser-home-links"><span onclick="browserQuickSearch('NovaWare')">NovaWare</span><span onclick="browserQuickSearch('retro computers')">Retro computers</span><span onclick="browserQuickSearch('video games')">Video games</span><span onclick="browserQuickSearch('space')">Space</span></div></div><p class="browser-disclaimer">You are browsing a fictional network stored inside NovaWare. No internet connection required.</p></div></div><div class="browser-statusbar"><span id="browserStatusText">Ready · NovaNet disconnected from the real internet</span><span class="browser-status-meter"><i></i><i></i><i></i><i></i><i></i><i></i></span><span>LOCAL</span></div></div>`}
-function initNovaBrowser(){const q=$("browserQuery");if(q)q.focus()}
-function browserSearchType(filter){novaBrowserFilter=filter;novaBrowserPage=1;browserRenderResults()}
-function browserQuickSearch(q){if($("browserQuery"))$("browserQuery").value=q;browserSearch()}
-function browserGoAddress(){const v=$("browserAddress")?.value.trim()||"";if(!v)return;if(/^https?:\/\//i.test(v)){browserOpenMock(v.replace(/^https?:\/\//i,""));return}if($("browserQuery"))$("browserQuery").value=v;browserSearch()}
-function browserSearch(push=true){const q=($("browserQuery")?.value||"").trim();if(!q)return toast("Type something to search NovaSearch");novaBrowserQuery=q;novaBrowserPage=1;if(push){novaBrowserHistory=novaBrowserHistory.slice(0,novaBrowserHistoryIndex+1);novaBrowserHistory.push({q,page:1});novaBrowserHistoryIndex=novaBrowserHistory.length-1}browserRenderResults()}
-function browserMakeResult(i,words){
- const word=words[i%Math.max(1,words.length)]||novaBrowserQuery||"NovaWare";
- const kinds=[
-  {kind:"article",label:"FEATURED ARTICLE",icon:"📰",site:"NovaPedia",titles:["A closer look at","Understanding","The complete guide to","What makes"],snips:["A clear introduction with useful background, key facts and related ideas.","Explore the topic through a short overview, helpful examples and further reading."]},
-  {kind:"image",label:"IMAGE COLLECTION",icon:"🖼️",site:"PixelGallery",titles:["Photos and illustrations of","Visual collection:","A gallery of","See examples of"],snips:["A curated fictional gallery with colorful illustrations, diagrams and visual references.","Browse a collection of themed pictures and creative visual inspiration."]},
-  {kind:"video",label:"VIDEO",icon:"🎬",site:"NovaVideo",titles:["Watch: discovering","Video guide to","A quick tour of","Explained on video:"],snips:["A short made-up video entry with a preview, duration and chapter notes.","Watch a fictional explainer with highlights and a beginner-friendly summary."]},
-  {kind:"forum",label:"COMMUNITY DISCUSSION",icon:"💬",site:"TalkSquare",titles:["People are discussing","Community question:","What everyone asks about","Tips shared for"],snips:["A lively community thread with different opinions, practical tips and follow-up questions.","Readers compare experiences, share suggestions and answer common questions."]},
-  {kind:"directory",label:"RESOURCE DIRECTORY",icon:"📚",site:"LinkHarbor",titles:["Useful resources for","The resource hub for","Explore links about","Directory: "],snips:["A directory of fictional references, topic pages, beginner resources and helpful tools.","Find categorized links, quick facts and related subjects in one place."]},
-  {kind:"news",label:"LATEST STORY",icon:"🗞️",site:"DailySignal",titles:["The latest about","What's new in","Today's topic:","Update and highlights:"],snips:["A fictional news-style update with a summary, timeline and background context.","Catch up on a made-up report and see the key points at a glance."]},
-  {kind:"guide",label:"HOW-TO GUIDE",icon:"🧭",site:"HowToNova",titles:["How to get started with","A practical guide to","Step-by-step:","Learn the basics of"],snips:["A simple walkthrough split into steps, with beginner tips and a useful checklist.","Follow a fictional step-by-step guide with examples and common questions."]},
-  {kind:"facts",label:"QUICK FACTS",icon:"💡",site:"FactFoundry",titles:["Facts you might not know about","Five things about","Quick facts:","Surprising details about"],snips:["A bite-sized fact sheet with interesting details, definitions and related topics.","Discover quick facts, a mini glossary and a few surprising connections."]},
-  {kind:"review",label:"REVIEW & PICKS",icon:"⭐",site:"ChoiceBoard",titles:["Popular picks for","A comparison of","Readers' favorites:","Things worth exploring:"],snips:["A fictional comparison page with highlights, pros, cons and reader favorites.","Browse a ranked selection with short descriptions and useful comparison notes."]},
-  {kind:"archive",label:"FROM THE ARCHIVE",icon:"🗃️",site:"RetroArchive",titles:["From the archive:","A history of","Looking back at","The story behind"] ,snips:["An archive entry featuring a timeline, old references and historical notes.","Explore a preserved fictional record with dates, captions and context."]}
- ];
- const t=kinds[i%kinds.length],host=t.site.toLowerCase()+".example",title=t.titles[(i*3)%t.titles.length]+" "+word;
- const snippet=t.snips[(i*7)%t.snips.length];
- const tags=["Overview","Related topics","Beginner friendly","Reference","Community pick","Updated"];
- return {id:i+1,word,kind:t.kind,label:t.label,icon:t.icon,site:t.site,host,title,snippet,tag:tags[(i*5)%tags.length],date:`${(i%27)+1} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][i%12]} 2026`,author:["Nova Editorial","Pixel Team","A. Reader","Community Desk","Archive Staff"][i%5],duration:t.kind==="video"?`${2+(i%18)}:${String((i*13)%60).padStart(2,"0")}`:null};
-}
-function browserRenderResults(){
- const view=$("browserView");if(!view)return;
- const q=novaBrowserQuery,words=q.split(/\s+/).filter(Boolean);
- const all=Array.from({length:1000},(_,i)=>i);
- const selected=novaBrowserFilter==="all"?all:all.filter(i=>browserMakeResult(i,words).kind===novaBrowserFilter);
- const pages=Math.max(1,Math.ceil(selected.length/10));novaBrowserPage=Math.min(novaBrowserPage,pages);
- const start=(novaBrowserPage-1)*10;
- const tabs=[['all','All'],['image','Images'],['video','Videos'],['news','News']];
- let html=`<div class="browser-search-wrap"><form class="browser-search" onsubmit="event.preventDefault();browserSearch()"><input id="browserQuery" value="${escapeHTML(q)}" autocomplete="off" placeholder="Search NovaSearch..."><button type="submit">🔎 Search</button></form><div class="browser-extra-tools"><button onclick="browserShowBookmarks()">★ Saved pages (${novaBrowserBookmarks.length})</button><button onclick="browserShowHistory()">🕘 Search history</button></div></div><div class="browser-tabs">${tabs.map(([key,label])=>`<button class="browser-tab ${novaBrowserFilter===key?'active':''}" onclick="browserSearchType('${key}')">${label}${key==='all'?'':` (${all.filter(i=>browserMakeResult(i,words).kind===key).length})`}</button>`).join('')}</div><div class="browser-results"><div class="browser-status">About ${selected.length.toLocaleString()} fictional results for <b>${escapeHTML(q)}</b> · Page ${novaBrowserPage} of ${pages} · Sorted by relevance</div>`;
- for(const idx of selected.slice(start,start+10)){
-  const r=browserMakeResult(idx,words),saved=novaBrowserBookmarks.some(x=>x.id===r.id&&x.q===q);
-  html+=`<article class="browser-result" data-kind="${r.kind}"><div class="browser-thumb" aria-label="${r.label}">${r.icon}<small>${r.kind==='video'?'▶ PLAY':r.kind==='image'?'GALLERY':r.kind.toUpperCase()}</small></div><div class="browser-result-main"><div class="browser-kind">${r.label}</div><a onclick="browserOpenMock(${r.id})">${escapeHTML(r.title)} · Result ${r.id}</a><div class="browser-url">https://${r.host}/entry/${r.id}</div><div class="browser-featureline">${escapeHTML(r.snippet)}</div><div class="browser-meta">${r.site} · ${r.date} · ${r.author}${r.duration?' · '+r.duration:''}</div><div class="browser-badges"><span class="browser-badge">${r.tag}</span><span class="browser-badge">${escapeHTML(r.word)}</span><button class="browser-save" onclick="browserToggleBookmark(${r.id})">${saved?'★ Saved':'☆ Save'}</button></div></div></article>`;
- }
- html+=`</div><div class="browser-pagination"><button onclick="browserSetPage(1)" ${novaBrowserPage===1?'disabled':''}>First</button><button onclick="browserSetPage(${Math.max(1,novaBrowserPage-1)})" ${novaBrowserPage===1?'disabled':''}>Previous</button><b>Page ${novaBrowserPage} / ${pages}</b><button onclick="browserSetPage(${Math.min(pages,novaBrowserPage+1)})" ${novaBrowserPage===pages?'disabled':''}>Next</button><button onclick="browserSetPage(${pages})" ${novaBrowserPage===pages?'disabled':''}>Last</button></div><p class="browser-disclaimer">NovaSearch generated fictional results offline. Search content is simulated and no real websites were contacted.</p>`;
- view.innerHTML=html;const address=$("browserAddress");if(address)address.value=q;
-}
-function browserToggleBookmark(id){const r=browserMakeResult(id-1,novaBrowserQuery.split(/\s+/).filter(Boolean)),at=novaBrowserBookmarks.findIndex(x=>x.id===id&&x.q===novaBrowserQuery);if(at>=0){novaBrowserBookmarks.splice(at,1);toast('Removed from saved pages')}else{novaBrowserBookmarks.push({id,q:novaBrowserQuery,title:r.title,site:r.site});toast('Page saved to bookmarks')}browserRenderResults()}
-function browserShowBookmarks(){const view=$("browserView");if(!view)return;view.innerHTML=`<div class="browser-page"><h1>★ Saved pages</h1>${novaBrowserBookmarks.length?novaBrowserBookmarks.map(x=>`<p><a onclick="novaBrowserQuery=${JSON.stringify(x.q).replace(/\"/g,'&quot;')};browserOpenMock(${x.id})">${escapeHTML(x.title)}</a> <small>— ${escapeHTML(x.site)}</small></p>`).join(''):'<p>No saved pages yet. Search for something and press ☆ Save.</p>'}<button onclick="browserRenderResults()">← Back to results</button><button onclick="browserHome()">Home</button></div>`}
-function browserShowHistory(){const view=$("browserView");if(!view)return;const items=novaBrowserHistory.slice().reverse();view.innerHTML=`<div class="browser-page"><h1>🕘 Search history</h1>${items.length?items.map((x,i)=>`<p><a onclick="browserQuickSearch(${JSON.stringify(x.q).replace(/\"/g,'&quot;')})">${escapeHTML(x.q)}</a> <small>— page ${x.page}</small></p>`).join(''):'<p>No searches yet.</p>'}<button onclick="browserRenderResults()">← Back to results</button><button onclick="browserHome()">Home</button></div>`}
-function browserSetPage(n){const words=novaBrowserQuery.split(/\s+/).filter(Boolean),total=novaBrowserFilter==="all"?1000:Array.from({length:1000},(_,i)=>i).filter(i=>browserMakeResult(i,words).kind===novaBrowserFilter).length; novaBrowserPage=Math.max(1,Math.min(Math.ceil(total/10),n));if(novaBrowserHistoryIndex>=0)novaBrowserHistory[novaBrowserHistoryIndex]={q:novaBrowserQuery,page:novaBrowserPage};browserRenderResults()}
-function browserOpenMock(id){const view=$("browserView");if(!view)return;const r=browserMakeResult(Math.max(0,Number(id)-1),novaBrowserQuery.split(/\s+/).filter(Boolean));const topic=escapeHTML(r.word);const paragraphs=[`Explore ${topic} through this fictional NovaSearch page. This entry brings together background, useful details and related ideas.`,`Readers can browse the overview, compare related topics and follow the suggested sections below.`,`This page is part of ${r.site}, a fictional website inside the NovaWare offline browser.`];const blocks=r.kind==='image'?`<div class="mock-gallery">${[0,1,2,3].map((n)=>`<div class="mock-picture" style="--h:${(n*67+id*13)%360}"><span>${['🌄','🎨','📷','🖼️'][n]}</span><small>${escapeHTML(topic)} · image ${n+1}</small></div>`).join('')}</div>`:r.kind==='video'?`<div class="mock-video"><div>▶</div><b>${escapeHTML(r.title)}</b><small>Fictional preview · ${r.duration||'4:20'}</small></div><p><button onclick="toast('This is a fictional video preview')">▶ Play preview</button> <button onclick="toast('Added to your pretend watch later list')">＋ Watch later</button></p>`:r.kind==='forum'?`<div class="panel"><b>Community replies</b><p>🗨️ PixelFan: “I found this really interesting!”</p><p>🗨️ RetroReader: “Here is another way to look at it.”</p><p>🗨️ NovaGuest: “Thanks for sharing this guide.”</p><textarea placeholder="Write a pretend reply..." rows="2"></textarea><button onclick="toast('Demo reply posted locally')">Post reply</button></div>`:`<div class="panel"><b>On this page</b><ul><li>Overview and introduction</li><li>Key details about ${topic}</li><li>Related topics and further reading</li></ul></div>`;view.innerHTML=`<div class="browser-page"><div class="browser-status">${r.label} · Fictional website</div><div class="browser-url">${r.site} · https://${r.host}/entry/${r.id}</div><h1>${r.icon} ${escapeHTML(r.title)}</h1><div class="browser-meta">By ${r.author} · ${r.date} · 4 min read</div>${blocks}<p><b>${topic}</b> — ${escapeHTML(r.snippet)}</p>${paragraphs.map(x=>`<p>${escapeHTML(x)}</p>`).join('')}<div class="browser-related"><b>Related searches</b><p>${[topic+' guide',topic+' pictures','learn about '+topic].map(x=>`<button onclick="browserQuickSearch(${JSON.stringify(x).replace(/\"/g,'&quot;')})">${escapeHTML(x)}</button>`).join(' ')}</p></div><button onclick="browserRenderResults()">← Back to results</button> <button onclick="browserHome()">Home</button> <button onclick="browserToggleBookmark(${r.id});browserOpenMock(${r.id})">☆ Save page</button></div>`;if($("browserAddress"))$("browserAddress").value=r.host+"/entry/"+r.id}
-function browserHome(){const view=$("browserView");if(view)view.innerHTML=`<div class="browser-brand"><div class="logo">NovaSearch</div><p>The pretend search engine built into NovaWare</p><form class="browser-search" onsubmit="event.preventDefault();browserSearch()"><input id="browserQuery" placeholder="Search anything..." autocomplete="off"><button type="submit">Search</button></form><div class="browser-home-links"><span onclick="browserQuickSearch('NovaWare')">NovaWare</span><span onclick="browserQuickSearch('retro computers')">Retro computers</span><span onclick="browserQuickSearch('video games')">Video games</span><span onclick="browserQuickSearch('space')">Space</span></div><p class="browser-disclaimer">Offline demo · Search results and websites are fictional.</p></div>`;if($("browserAddress"))$("browserAddress").value="";novaBrowserQuery=""}
-function browserBack(){if(novaBrowserHistoryIndex>0){novaBrowserHistoryIndex--;const h=novaBrowserHistory[novaBrowserHistoryIndex];novaBrowserQuery=h.q;novaBrowserPage=h.page;browserRenderResults()}}
-function browserForward(){if(novaBrowserHistoryIndex<novaBrowserHistory.length-1){novaBrowserHistoryIndex++;const h=novaBrowserHistory[novaBrowserHistoryIndex];novaBrowserQuery=h.q;novaBrowserPage=h.page;browserRenderResults()}}
-function initApp(id){if(id==="browser")initNovaBrowser();if(id==="store")renderStore();if(id==="filemanager")refreshFiles();if(id==="minesweeper")newMineGame();if(id==="music")initMusic();if(id==="video")initVideo();if(id==="paint")initPaint();if(id==="terminal")term("Ready.");if(id==="calendar")renderCalendar();if(id==="clock")startWorldClock();if(id==="system")refreshSystemInfo();if(id==="solitaire")newSolitaire();}
-let currentStoreSection="home";
-function storeSection(section){currentStoreSection=section;renderStore();}
-function storeCategory(id){if(apps[id]?.category)return apps[id].category;if(["snake","pong","breakout","minesweeper","solitaire"].includes(id))return "games";if(["music","video","soundrec","reader"].includes(id))return "media";return "tools";}
-function storeDetails(id){
- if(["browser","filemanager","store","settings","about","terminal"].includes(id))return;
- const a=apps[id];if(!a)return;const box=$("storeDetail");if(!box)return;
- const installed=!!a.installed;
- box.innerHTML=`<div class="store-detail"><button onclick="closeStoreDetails()">← Back to store</button><div style="margin-top:12px"><div class="detail-icon">${a.icon}</div><h2>${escapeHTML(a.name)}</h2><p><b>${storeCategory(id)==="games"?"Game":storeCategory(id)==="media"?"Media application":"Desktop application"}</b> · NovaWare · Free</p><p>${escapeHTML(a.description||appDescriptions[id]||`${a.name} for NovaWare.`)}</p><p>${installed?"This application is ready on your desktop.":"Download and install this app to add it to your NovaWare desktop."}</p>${installed?`<button onclick="openApp('${id}')">Open app</button> <button onclick="toggleStoreApp('${id}')">Uninstall</button>`:`<button onclick="downloadApp('${id}')">⬇ Download & install</button>`}</div></div>`;
- box.style.display="block";$("storeApps").style.display="none";$("storeFeature").style.display="none";$("storeTitle").textContent="App details";$("storeCount").textContent="";
-}
-function closeStoreDetails(){const d=$("storeDetail");if(d)d.innerHTML="";if($("storeApps"))$("storeApps").style.display="grid";if($("storeFeature"))$("storeFeature").style.display="block";renderStore();}
-let activeDownloadId=null;
-async function downloadApp(id){
- if(activeDownloadId)return;const a=apps[id];if(!a||a.installed)return;
- activeDownloadId=id;const box=$("storeDetail");if(!box){activeDownloadId=null;return;}
- box.style.display="block";$("storeApps").style.display="none";$("storeFeature").style.display="none";$("storeTitle").textContent="NovaStore · Downloads";$("storeCount").textContent="1 active download";
- box.innerHTML=`<div class="store-detail download-page"><button onclick="closeStoreDetails()" disabled>Downloading…</button><div class="download-icon">${a.icon}</div><h2>Downloading ${escapeHTML(a.name)}</h2><p>${escapeHTML(a.description||appDescriptions[id]||a.name)}</p><p id="downloadStatus">Connecting to NovaStore…</p><div class="download-track"><div id="downloadFill" class="download-fill"></div></div><p id="downloadPercent" class="download-percent">0% · 5 seconds remaining</p><p class="small">Please keep NovaStore open until installation finishes.</p></div>`;
- const started=Date.now(),duration=5000;
- await new Promise(resolve=>{const timer=setInterval(()=>{const elapsed=Math.min(duration,Date.now()-started),pct=Math.min(100,Math.floor(elapsed/duration*100)),remaining=Math.ceil((duration-elapsed)/1000);const fill=$("downloadFill"),percent=$("downloadPercent"),status=$("downloadStatus");if(fill)fill.style.width=pct+"%";if(percent)percent.textContent=pct+"% · "+remaining+" seconds remaining";if(status)status.textContent=pct<25?"Preparing app package…":pct<70?"Downloading files…":"Installing into NovaWare…";if(elapsed>=duration){clearInterval(timer);resolve();}},50)});
- a.installed=true;await saveInstalled();renderIcons();activeDownloadId=null;notify("App installed",a.name+" is ready on your desktop.");
- box.innerHTML=`<div class="store-detail download-page"><div class="download-icon">${a.icon}</div><h2>✓ ${escapeHTML(a.name)} installed!</h2><p>${escapeHTML(a.description||appDescriptions[id]||a.name)}</p><p>The app is now available on your NovaWare desktop and Start menu.</p><button onclick="openApp('${id}')">Open app</button> <button onclick="closeStoreDetails()">Back to NovaStore</button></div>`;
- $("storeCount").textContent="Installed successfully";const status=$("storeStatus");if(status)status.textContent=a.name+" downloaded and installed.";
-}
-async function toggleStoreApp(id){
- if(["browser","filemanager","store","settings","about","terminal"].includes(id))return;
- const a=apps[id];if(!a)return;
- if(!a.installed){downloadApp(id);return;}
- closeApp(id);a.installed=false;delete iconPositions[id];await saveInstalled();renderIcons();
- const status=$("storeStatus");if(status)status.textContent=a.name+" was uninstalled.";notify("App removed",a.name+" was removed from your desktop.");
- renderStore();
-}
-function renderStore(){
- const c=$("storeApps");if(!c)return;
- const search=($("storeSearch")?.value||"").trim().toLowerCase();
- const all=Object.entries(apps).filter(([id])=>!["browser","filemanager","store","settings","about","terminal"].includes(id));
- let list=all.filter(([id,a])=>{
-  const cat=storeCategory(id),q=(a.name+" "+id).toLowerCase();
-  if(search&&!q.includes(search))return false;
-  if(currentStoreSection==="apps")return cat!=="games";
-  if(currentStoreSection==="games")return cat==="games";
-  if(currentStoreSection==="installed")return !!a.installed;
-  if(["media","tools"].includes(currentStoreSection))return cat===currentStoreSection;
-  return true;
- });
- const titles={home:"Recommended for you",apps:"Explore apps",games:"Games",installed:"Installed applications",media:"Music & video",tools:"Tools & utilities"};
- $("storeTitle").textContent=titles[currentStoreSection]||"NovaStore";
- ["home","apps","games","installed"].forEach(k=>$("store-nav-"+k)?.classList.toggle("active",currentStoreSection===k));
- const feature=$("storeFeature");
- if(currentStoreSection==="home"&&!search){const featured=apps.minesweeper;feature.innerHTML=`<div class="store-feature"><div class="emoji">${featured.icon}</div><div><b>FEATURED GAME</b><h2 style="margin:3px 0">${featured.name}</h2><div>Clear the board. Avoid the mines. A NovaWare classic!</div><button onclick="storeDetails('minesweeper')">View app</button></div></div>`;}else feature.innerHTML="";
- $("storeCount").textContent=list.length+" apps";
- const detail=$("storeDetail");detail.innerHTML="";detail.style.display="none";c.style.display="grid";feature.style.display=feature.innerHTML?"block":"none";
- c.innerHTML="";
- if(!list.length){c.innerHTML='<div class="store-empty">No apps found. Try another search.</div>';return;}
- list.forEach(([id,a])=>{
-  const installed=!!a.installed,card=document.createElement("article");card.className="storeApp";
-  card.innerHTML=`<div class="emoji">${a.icon}</div><div><h3>${escapeHTML(a.name)}</h3><div class="app-meta">${storeCategory(id)==="games"?"Game":storeCategory(id)==="media"?"Media":"Utility"} · ${installed?"Installed":"Free"}</div><p class="app-description">${escapeHTML(a.description||appDescriptions[id]||a.name)}</p></div><button class="app-open">Details</button><button class="app-install">${installed?"Uninstall":"Get"}</button>`;
-  card.querySelector(".app-open").onclick=()=>storeDetails(id);
-  card.querySelector(".app-install").onclick=()=>installed?toggleStoreApp(id):storeDetails(id);
-  c.appendChild(card);
- });
-}
-async function saveInstalled(){await setMeta("installed",Object.fromEntries(Object.entries(apps).map(([k,v])=>[k,v.installed])))}
-function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function downloadBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1500)}
-async function saveNote(){let name=$("noteName").value.trim()||"Untitled.txt",blob=new Blob([$("note").value],{type:"text/plain"});await addFile({name,path:"/Documents/"+name,type:blob.type,size:blob.size,blob});toast(name+" saved in NovaFS")}
-function downloadNote(){downloadBlob(new Blob([$("note").value],{type:"text/plain"}),$("noteName").value||"NovaNote.txt")}
-async function initMusic(){$("musicFile").onchange=e=>{musicFiles=Array.from(e.target.files);musicIndex=0;playMusic()}}
-function playMusic(){if(!musicFiles.length)return;let p=$("musicPlayer");if(audioURL)URL.revokeObjectURL(audioURL);audioURL=URL.createObjectURL(musicFiles[musicIndex]);p.src=audioURL;p.load();p.play().catch(()=>{});$("musicName").textContent=musicFiles[musicIndex].name;$("musicList").innerHTML=musicFiles.map((f,i)=>`<p><button onclick="selectTrack(${i})">${i===musicIndex?"▶":"♪"} ${escapeHTML(f.name)}</button></p>`).join("")}
-function selectTrack(i){musicIndex=i;playMusic()}function changeTrack(d){if(!musicFiles.length)return;musicIndex=(musicIndex+d+musicFiles.length)%musicFiles.length;playMusic()}
-function initVideo(){$("videoFile").onchange=e=>{let f=e.target.files[0];if(!f)return;if(videoURL)URL.revokeObjectURL(videoURL);videoURL=URL.createObjectURL(f);$("videoPlayer").src=videoURL;$("videoPlayer").load();$("videoName").textContent=f.name}}
-async function saveCurrentMedia(kind){let f=kind==="audio"?musicFiles[musicIndex]:$("videoFile").files[0];if(!f)return toast("Choose a media file first");await addFile({name:f.name,path:"/Media/"+f.name,type:f.type,size:f.size,blob:f});toast(f.name+" saved to NovaFS")}
-let calcExpression="";function calc(v){if(v==="C")calcExpression="";else if(v==="="){try{if(!/^[0-9+\-*/.() ]+$/.test(calcExpression))throw 0;let r=Function('"use strict";return ('+calcExpression+')')();if(!Number.isFinite(r))throw 0;calcExpression=String(r)}catch{calcExpression="";$("calcDisplay").value="Error";return}}else calcExpression+=v;$("calcDisplay").value=calcExpression}
-function initPaint(){let c=$("paintCanvas"),ctx=c.getContext("2d"),drawing=false;c.onpointerdown=e=>{drawing=true;c.setPointerCapture(e.pointerId);ctx.beginPath();ctx.moveTo(e.offsetX,e.offsetY)};c.onpointermove=e=>{if(!drawing)return;ctx.strokeStyle=$("paintColor").value;ctx.lineWidth=4;ctx.lineCap="round";ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke()};c.onpointerup=c.onpointercancel=()=>drawing=false}
-function clearPaint(){let c=$("paintCanvas");c.getContext("2d").clearRect(0,0,c.width,c.height)}
-async function savePaint(){ $("paintCanvas").toBlob(async b=>{await addFile({name:"NovaPaint.png",path:"/Pictures/NovaPaint.png",type:"image/png",size:b.size,blob:b});toast("Drawing saved to NovaFS")})}
-function exportPaint(){$("paintCanvas").toBlob(b=>downloadBlob(b,"NovaPaint.png"))}
-function startWatch(){if(watchInterval)return;watchStart=Date.now();watchInterval=setInterval(()=>$("watchTime").textContent=formatTime(watchElapsed+Date.now()-watchStart),100)}
-function stopWatch(){if(watchInterval){watchElapsed+=Date.now()-watchStart;clearInterval(watchInterval);watchInterval=null}}
-function resetWatch(){stopWatch();watchElapsed=0;$("watchTime").textContent="00:00.0"}
-function formatTime(ms){let s=Math.floor(ms/1000),m=Math.floor(s/60);return String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0")+"."+Math.floor(ms%1000/100)}
-/* NovaFS */
-let currentPath="/";
-function pathJoin(a,b){return (a==="/"?"":a)+"/"+b}
-async function refreshFiles(){let box=$("fsList");if(!box)return;$("fsPath").textContent=currentPath;let all=await getAllFiles(),dirs=new Set(["/",...(await getMeta("folders")||[])]);all.forEach(f=>{let p=f.path.split("/").filter(Boolean);let cur="";p.slice(0,-1).forEach(x=>{cur+="/"+x;dirs.add(cur)})});let children=[...dirs].filter(d=>d!==currentPath&&d.substring(0,d.lastIndexOf("/")||1)===currentPath);let files=all.filter(f=>f.path.substring(0,f.path.lastIndexOf("/")||1)===currentPath);
- let html=`<table class="filelist"><thead><tr><th>Name</th><th>Type</th><th>Size</th><th>Actions</th></tr></thead><tbody>`;
- if(currentPath!=="/")html+=`<tr><td><button onclick="goUp()">⬆ ..</button></td><td>Folder</td><td></td><td></td></tr>`;
- children.forEach(d=>{let n=d.split("/").pop();html+=`<tr><td><button onclick="openFolder('${escapeHTML(d)}')">📁 ${escapeHTML(n)}</button></td><td>Folder</td><td>—</td><td></td></tr>`});
- files.forEach(f=>{html+=`<tr><td>📄 ${escapeHTML(f.name)}</td><td>${escapeHTML(f.type||"File")}</td><td>${formatBytes(f.size||0)}</td><td><button onclick="openFSFile(${f.id})">Open</button> <button onclick="renameFSFile(${f.id})">Rename</button> <button onclick="removeFSFile(${f.id})">Delete</button></td></tr>`});
- if(!children.length&&!files.length)html+=`<tr><td colspan="4" class="muted">This folder is empty.</td></tr>`;
- box.innerHTML=html+"</tbody></table>";
-}
-function openFolder(p){currentPath=p;refreshFiles()}function goUp(){currentPath=currentPath.substring(0,currentPath.lastIndexOf("/"))||"/";refreshFiles()}
-async function newFolder(){let n=prompt("Folder name?");if(!n)return;let p=pathJoin(currentPath,n.trim());await setMeta("folders",[...new Set([...(await getMeta("folders")||[]),p])]);refreshFiles();toast("Folder created")}
-async function newTextFile(){let n=prompt("File name?","New document.txt");if(!n)return;let blob=new Blob([""],{type:"text/plain"});await addFile({name:n,path:pathJoin(currentPath,n),type:"text/plain",size:0,blob});refreshFiles()}
-async function uploadFiles(list){for(const f of Array.from(list||[]))await addFile({name:f.name,path:pathJoin(currentPath,f.name),type:f.type,size:f.size,blob:f});refreshFiles();toast(list.length+" file(s) imported")}
-async function openFSFile(id){let f=(await getAllFiles()).find(x=>x.id===id);if(!f)return;let url=URL.createObjectURL(f.blob);if(f.type.startsWith("text/")||/\.(txt|md|json|html|css|js)$/i.test(f.name)){let text=await f.blob.text();let w=open("","_blank");if(w){w.document.write("<pre style='white-space:pre-wrap;font:14px monospace;padding:15px'>"+escapeHTML(text)+"</pre>");w.document.close()}else toast("Pop-up blocked. Use Download instead.")}else downloadBlob(f.blob,f.name);setTimeout(()=>URL.revokeObjectURL(url),10000)}
-async function renameFSFile(id){let f=(await getAllFiles()).find(x=>x.id===id);if(!f)return;let n=prompt("Rename file:",f.name);if(!n)return;let parent=f.path.substring(0,f.path.lastIndexOf("/"));await updateFile(id,{name:n,path:(parent||"")+"/"+n});refreshFiles()}
-async function removeFSFile(id){if(!confirm("Delete this file from NovaFS?"))return;await deleteFile(id);refreshFiles()}
-function formatBytes(n){return n<1024?n+" B":n<1048576?(n/1024).toFixed(1)+" KB":(n/1048576).toFixed(1)+" MB"}
-async function exportFS(){let files=await getAllFiles(),out=[];for(let f of files)out.push({name:f.name,path:f.path,type:f.type,size:f.size,data:await f.blob.arrayBuffer().then(b=>Array.from(new Uint8Array(b)))});downloadBlob(new Blob([JSON.stringify({version:1,files:out,folders:await getMeta("folders")||[]})],{type:"application/json"}),"NovaFS-backup.json")}
-async function restoreFS(file){if(!file)return;try{let data=JSON.parse(await file.text());for(let f of data.files||[]){let bytes=new Uint8Array(f.data||[]);await addFile({name:f.name,path:f.path,type:f.type,size:f.size,blob:new Blob([bytes],{type:f.type})})}await setMeta("folders",data.folders||[]);refreshFiles();toast("NovaFS backup restored")}catch(e){toast("That backup file is invalid")}}
-/* NovaWare 8.2 extras: notification center, themes and desktop clock widget */
-let notificationHistory=[];
-function toggleNotifications(){const p=$("notifyPanel");p.style.display=p.style.display==="block"?"none":"block";renderNotifications()}
-function notify(title,message){notificationHistory.unshift({title,message,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})});notificationHistory=notificationHistory.slice(0,20);renderNotifications();const b=$("notifyBtn");if(b)b.textContent="🔔";toast(title)}
-function renderNotifications(){const l=$("notifyList");if(!l)return;l.innerHTML=notificationHistory.length?notificationHistory.map(n=>`<div class="notice"><b>${escapeHTML(n.title)}</b><span>${escapeHTML(n.message)}</span><div class="small">${escapeHTML(n.time)}</div></div>`).join(""):'<p class="small">You are all caught up. No notifications.</p>'}
-function clearNotifications(){notificationHistory=[];renderNotifications();toast("Notifications cleared")}
-function toggleDesktopWidget(){let w=$("desktopClockWidget");if(w){w.remove();return}w=document.createElement("div");w.id="desktopClockWidget";w.className="widget-clock";w.innerHTML='<strong id="widgetClockTime">--:--</strong><span id="widgetClockDate">Loading date…</span>';$("desktop").appendChild(w);updateDesktopWidget()}
-function updateDesktopWidget(){const t=$("widgetClockTime"),d=$("widgetClockDate");if(t)t.textContent=new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});if(d)d.textContent=new Date().toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"})}
-function applyTheme(name){const themes={classic:{color:"#008080",wall:"linear-gradient(135deg,#008080,#005080)"},ocean:{color:"#000080",wall:"linear-gradient(135deg,#000080,#168bd0)"},purple:{color:"#563078",wall:"linear-gradient(135deg,#563078,#b45c9c)"},forest:{color:"#315b32",wall:"linear-gradient(135deg,#315b32,#8dbb54)"}};const t=themes[name]||themes.classic;document.documentElement.style.setProperty("--desktop",t.color);$("wallpaper").style.background=t.wall;saveSettings();notify("Theme changed",name.charAt(0).toUpperCase()+name.slice(1)+" theme applied.")}
-/* settings */
-async function saveSettings(){await setMeta("settings",{wallpaper:$("wallpaper").style.background||"",desktopColor:getComputedStyle(document.documentElement).getPropertyValue("--desktop").trim(),iconPositions})}
-function applyDeskColor(){document.documentElement.style.setProperty("--desktop",$("deskColor").value);$("wallpaper").style.background="";saveSettings();toast("Desktop color updated")}
-function applyWallpaper(){let f=$("wallFile").files[0];if(!f)return;let r=new FileReader();r.onload=()=>{$("wallpaper").style.background=`url("${r.result}") center/cover no-repeat`;saveSettings();toast("Wallpaper set")};r.readAsDataURL(f)}
-function clearWallpaper(){$("wallpaper").style.background="";saveSettings()}
-function resetLayout(){iconPositions={};renderIcons();saveSettings();toast("Icon layout reset")}
-function term(s){let o=$("termOutput");if(o)o.innerHTML+=`<div>${escapeHTML(s)}</div>`;if(o)o.scrollTop=o.scrollHeight}
-async function runTerminal(){let input=$("termInput"),cmd=input.value.trim(),parts=cmd.split(" ");input.value="";term("&gt; "+cmd);if(cmd==="help")term("help · date · version · apps · ls · clear · whoami");else if(cmd==="date")term(new Date().toString());else if(cmd==="version")term("NovaWare 8.2 / IndexedDB");else if(cmd==="apps")term(Object.keys(apps).filter(x=>apps[x].installed).join(", "));else if(cmd==="whoami")term("Nova user");else if(cmd==="clear")$("termOutput").innerHTML="";else if(cmd==="ls"){let fs=await getAllFiles();term(fs.map(f=>f.path).join("<br>")||"NovaFS is empty")}else term("Unknown command. Type help.");}
-/* Extra NovaWare applications */
-let calendarMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1),recorder=null,recordedBlob=null,recordedURL=null,recordChunks=[],recordStarted=0,recordTimer=null,sessionStarted=Date.now(),worldClockTimer=null;
-function renderCalendar(){const grid=$("calendarGrid");if(!grid)return;const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();$("calendarLabel").textContent=calendarMonth.toLocaleDateString(undefined,{month:"long",year:"numeric"});grid.innerHTML="";["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d=>{let e=document.createElement("b");e.textContent=d;grid.appendChild(e)});for(let i=0;i<first;i++)grid.appendChild(document.createElement("span"));for(let d=1;d<=days;d++){let b=document.createElement("button");b.textContent=d;b.style.minHeight="34px";if(y===new Date().getFullYear()&&m===new Date().getMonth()&&d===new Date().getDate())b.style.fontWeight="bold";b.onclick=()=>$("calendarSelected").textContent=new Date(y,m,d).toLocaleDateString(undefined,{dateStyle:"full"});grid.appendChild(b)}}
-function changeCalendar(n){calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+n,1);renderCalendar()}function calendarToday(){calendarMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);renderCalendar();$("calendarSelected").textContent="Today: "+new Date().toLocaleDateString(undefined,{dateStyle:"full"})}
-function startWorldClock(){updateWorldClock();clearInterval(worldClockTimer);worldClockTimer=setInterval(updateWorldClock,1000)}function updateWorldClock(){if(!$("localClock"))return;const now=new Date();$("localClock").textContent=now.toLocaleTimeString();$("worldClocks").innerHTML=[["London","Europe/London"],["New York","America/New_York"],["Tokyo","Asia/Tokyo"],["Sydney","Australia/Sydney"]].map(([n,z])=>`<p><b>${n}:</b> ${now.toLocaleTimeString("en-GB",{timeZone:z})}</p>`).join("")}
-async function loadReaderFile(file){if(!file)return;$("readerText").value=await file.text();$("readerName").value=file.name;}
-async function saveReaderText(){let name=$("readerName").value.trim()||"Reading.txt",blob=new Blob([$("readerText").value],{type:"text/plain"});await addFile({name,path:"/Documents/"+name,type:blob.type,size:blob.size,blob});toast(name+" saved to NovaFS")}
-function downloadReaderText(){downloadBlob(new Blob([$("readerText").value],{type:"text/plain"}),$("readerName").value||"Reading.txt")}
-async function startRecording(){if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){toast("Audio recording is not supported in this browser");return}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});recordChunks=[];recorder=new MediaRecorder(stream);recorder.ondataavailable=e=>{if(e.data.size)recordChunks.push(e.data)};recorder.onstop=()=>{recordedBlob=new Blob(recordChunks,{type:recorder.mimeType||"audio/webm"});if(recordedURL)URL.revokeObjectURL(recordedURL);recordedURL=URL.createObjectURL(recordedBlob);$("recPlayback").src=recordedURL;$("recSave").disabled=false;stream.getTracks().forEach(t=>t.stop());$("recStatus").textContent="Recording ready. Play it back or save it to NovaFS."};recorder.start();recordStarted=Date.now();$("recStart").disabled=true;$("recStop").disabled=false;$("recStatus").textContent="Recording…";recordTimer=setInterval(()=>{$("recTimer").textContent=formatTime(Date.now()-recordStarted).slice(0,5)},250)}catch(e){toast("Microphone permission was not granted")}}
-function stopRecording(){if(recorder&&recorder.state!=="inactive")recorder.stop();clearInterval(recordTimer);$("recStart").disabled=false;$("recStop").disabled=true}
-async function saveRecording(){if(!recordedBlob)return;let name="Recording-"+new Date().toISOString().replace(/[:.]/g,"-")+".webm";await addFile({name,path:"/Media/"+name,type:recordedBlob.type,size:recordedBlob.size,blob:recordedBlob});toast("Recording saved to NovaFS")}
-async function refreshSystemInfo(){if(!$("sysUptime"))return;let files=await getAllFiles();$("sysUptime").textContent=formatTime(Date.now()-sessionStarted);$("sysApps").textContent=Object.values(apps).filter(a=>a.installed).length;$("sysFiles").textContent=files.length;$("sysScreen").textContent=innerWidth+" × "+innerHeight;try{let x=await navigator.storage?.estimate();$("sysStorage").textContent=x?formatBytes(x.usage||0)+" used / "+formatBytes(x.quota||0)+" available":"Not reported by browser"}catch{$("sysStorage").textContent="Unavailable"}}
-let solitaireDeck=[],solitaireWaste=[],solitaireTableau=[],solitaireFoundations={S:[],H:[],D:[],C:[]},solitaireSelected=null,solitaireDrawMode=1,solitaireScore=0,solitaireMoves=0,solitaireSeconds=0,solitaireClock=null,solHold=null,solBackStyle=0;
-const solBacks=['repeating-linear-gradient(45deg,#173d91,#173d91 4px,#fff 4px,#fff 5px)','repeating-linear-gradient(135deg,#a00000,#a00000 4px,#fff 4px,#fff 5px)','repeating-linear-gradient(45deg,#006b35,#006b35 4px,#fff 4px,#fff 5px)','repeating-linear-gradient(45deg,#222,#222 4px,#f2d34f 4px,#f2d34f 5px)'];
-const suitSymbols={S:"♠",H:"♥",D:"♦",C:"♣"},solRanks=["","A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-function newSolitaire(){clearInterval(solitaireClock);solitaireDeck=[];solitaireWaste=[];solitaireTableau=[];solitaireFoundations={S:[],H:[],D:[],C:[]};solitaireSelected=null;solitaireScore=0;solitaireMoves=0;solitaireSeconds=0;for(let s of Object.keys(suitSymbols))for(let v=1;v<=13;v++)solitaireDeck.push({s,v,up:false});for(let i=solitaireDeck.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[solitaireDeck[i],solitaireDeck[j]]=[solitaireDeck[j],solitaireDeck[i]]}for(let col=0;col<7;col++){let pile=[];for(let j=0;j<=col;j++){let c=solitaireDeck.pop();c.up=j===col;pile.push(c)}solitaireTableau.push(pile)}renderSolitaire();solitaireClock=setInterval(()=>{solitaireSeconds++;renderSolStats()},1000);$('solitaireStatus').textContent='New game dealt. Good luck!'}
-function drawSolitaire(){if(solitaireDeck.length){for(let i=0;i<solitaireDrawMode&&solitaireDeck.length;i++){let c=solitaireDeck.pop();c.up=true;solitaireWaste.push(c)}solitaireMoves++}else if(solitaireWaste.length){solitaireDeck=solitaireWaste.reverse().map(c=>({...c,up:false}));solitaireWaste=[];solitaireMoves++;solitaireScore=Math.max(0,solitaireScore-20)}else return;solitaireSelected=null;renderSolitaire()}
-function solColor(c){return c.s==='H'||c.s==='D'?'red':''}
-function solCard(c,source,index,selected=false){if(!c)return '';let isTableau=source[0]==='t';return `<button class="sol-card ${solColor(c)} ${c.up?'':'back'} ${selected?'selected':''}" data-sol-card="1" data-sol-src="${source}" data-sol-index="${index}" onpointerdown="solHoldStart(event,'${source}',${index})" ondblclick="${c.up?`solDouble('${source}',${index})`:''}">${c.up?`${solRanks[c.v]}${suitSymbols[c.s]}<span style="position:absolute;right:5px;bottom:3px;font-size:19px">${suitSymbols[c.s]}</span>`:' '}</button>`}
-function renderSolitaire(){let b=$('solitaireBoard');if(!b)return;let stock=solitaireDeck.length?`<button class="sol-card back" onclick="drawSolitaire()" aria-label="Draw cards"> </button>`:`<button class="sol-card" style="background:#087000;color:#cfe8cf" onclick="drawSolitaire()">↻</button>`;let waste=solitaireWaste.length?solCard(solitaireWaste.at(-1),'w',solitaireWaste.length-1):`<div class="sol-slot"><span class="sol-empty">♧</span></div>`;let top=`<div class="sol-top"><div>${stock}<div style="font-size:11px">${solitaireDeck.length} left</div></div><div>${waste}</div><div></div>${Object.keys(suitSymbols).map(s=>{let c=solitaireFoundations[s].at(-1);return `<div class="sol-slot sol-foundation" data-sol-foundation="${s}">${c?solCard(c,'f',s,false):`<span class="sol-empty">${suitSymbols[s]}</span>`}</div>`}).join('')}</div>`;let cols=`<div class="sol-tableau">${solitaireTableau.map((pile,i)=>`<div class="sol-column" data-sol-column="${i}">${pile.length?pile.map((c,j)=>solCard(c,'t'+i,j)).join(''):'<div class="sol-slot"><span class="sol-empty">♧</span></div>'}</div>`).join('')}</div>`;b.innerHTML=top+cols;renderSolStats()}
-function solHoldStart(e,src,index){if(e.button!==undefined&&e.button!==0)return;let pile=src==='w'?solitaireWaste:src[0]==='t'?solitaireTableau[Number(src.slice(1))]:null;let c=pile?.[index];if(!c)return;if(!c.up){solHold={src,index,x:e.clientX,y:e.clientY,time:Date.now(),moved:false};return}solHold={src,index,x:e.clientX,y:e.clientY,time:Date.now(),moved:false};e.preventDefault()}
-document.addEventListener('pointermove',e=>{if(!solHold)return;if(Math.hypot(e.clientX-solHold.x,e.clientY-solHold.y)>8)solHold.moved=true});
-document.addEventListener('pointerup',e=>{if(!solHold)return;let h=solHold;solHold=null;let pile=h.src==='w'?solitaireWaste:solitaireTableau[Number(h.src.slice(1))],card=pile?.[h.index];if(!card)return;if(!card.up){if(!h.moved&&h.src[0]==='t'){card.up=true;solitaireScore+=5;renderSolitaire()}return}if(!h.moved||Date.now()-h.time<120)return;let el=document.elementFromPoint(e.clientX,e.clientY);let foundation=el?.closest('[data-sol-foundation]'),column=el?.closest('[data-sol-column]');solitaireSelected={src:h.src,index:h.index};if(foundation)solTryMove('f'+foundation.dataset.solFoundation,0);else if(column)solTryMove('t'+column.dataset.solColumn,0);else{solitaireSelected=null;renderSolitaire()} });
-function solClick(src,index){let pile=src==='w'?solitaireWaste:solitaireTableau[Number(src.slice(1))];let c=pile?.[index];if(!c||!c.up){if(src[0]==='t'&&c){c.up=true;solitaireScore+=5;renderSolitaire()}return}if(solitaireSelected){if(solitaireSelected.src===src&&solitaireSelected.index===index){solitaireSelected=null;renderSolitaire();return}if(solTryMove(src,index))return}solitaireSelected={src,index};renderSolitaire()}
-function solTryMove(dest,index){let sel=solitaireSelected;if(!sel)return false;let source=sel.src==='w'?solitaireWaste:solitaireTableau[Number(sel.src.slice(1))],moving=source.slice(sel.index),card=moving[0];if(!card||moving.some(c=>!c.up))return false;if(dest==='w'||dest===sel.src)return false;if(dest[0]==='t'){let target=solitaireTableau[Number(dest.slice(1))],top=target.at(-1);if(top?(top.up&&solColor(top)!==solColor(card)&&top.v===card.v+1):card.v===13){target.push(...moving);source.splice(sel.index);if(sel.src[0]==='t'&&source.length&&!source.at(-1).up){source.at(-1).up=true;solitaireScore+=5}solitaireSelected=null;solitaireMoves++;renderSolitaire();return true}}if(dest[0]==='f'&&moving.length===1){let suit=dest[1],foundation=solitaireFoundations[suit],top=foundation.at(-1);if(card.s===suit&&card.v===(top?top.v+1:1)){foundation.push(source.pop());if(sel.src[0]==='t'&&source.length&&!source.at(-1).up){source.at(-1).up=true;solitaireScore+=5}solitaireScore+=10;solitaireMoves++;solitaireSelected=null;renderSolitaire();solCheckWin();return true}}return false}
-function solFoundationClick(s){if(solitaireSelected){solTryMove('f'+s,0);return}let c=solitaireWaste.at(-1);if(c&&c.s===s&&c.v===(solitaireFoundations[s].length+1)){solitaireFoundations[s].push(solitaireWaste.pop());solitaireScore+=10;solitaireMoves++;renderSolitaire();solCheckWin()}}
-function solColumnEmpty(i){if(solitaireSelected){if(solTryMove('t'+i,0))return} }
-function solDouble(src,index){let pile=src==='w'?solitaireWaste:solitaireTableau[Number(src.slice(1))],c=pile?.[index];if(!c||!c.up)return;let f=solitaireFoundations[c.s],top=f.at(-1);if(c.v===(top?top.v+1:1)){f.push(pile.pop());if(src[0]==='t'&&pile.length&&!pile.at(-1).up){pile.at(-1).up=true;solitaireScore+=5}solitaireScore+=10;solitaireMoves++;solitaireSelected=null;renderSolitaire();solCheckWin()}}
-function solCheckWin(){if(Object.values(solitaireFoundations).every(p=>p.length===13)){clearInterval(solitaireClock);$('solitaireStatus').textContent='You won! All 52 cards are home. 🎉';solitaireScore+=100}}
-function solMenu(which){let p=$('solMenuPanel');if(!p)return;if(p.style.display!=='none'&&p.dataset.menu===which){p.style.display='none';return}p.dataset.menu=which;p.style.display='block';if(which==='game')p.innerHTML=`<button onclick="newSolitaire();solMenu('game')">New Game</button> <button onclick="solUndoHint()">Hint</button>`;else if(which==='options')p.innerHTML=`Draw cards: <button onclick="solitaireDrawMode=1;renderSolitaire();solMenu('options')">One</button> <button onclick="solitaireDrawMode=3;renderSolitaire();solMenu('options')">Three</button><br>Card backs: ${solBacks.map((v,i)=>`<button title="Card back ${i+1}" onclick="solBackStyle=${i};document.documentElement.style.setProperty('--sol-back',solBacks[${i}]);solMenu('options')" style="width:30px;height:38px;background:${v};border:2px outset white;margin:4px"></button>`).join('')}`;else p.innerHTML=`<b>Klondike Solitaire</b><p>Build foundations from Ace to King. Tableau columns descend in alternating colors. Only Kings may fill empty columns. Draw ${solitaireDrawMode} card${solitaireDrawMode===1?'':'s'} from the stock.</p><button onclick="solMenu('help')">Close</button>`}
-function solUndoHint(){let found=false;for(let i=0;i<7&&!found;i++){let p=solitaireTableau[i],c=p.at(-1);if(c?.up){let f=solitaireFoundations[c.s];if(c.v===f.length+1){$('solitaireStatus').textContent='Hint: try moving '+solRanks[c.v]+suitSymbols[c.s]+' to its foundation.';found=true}}}if(!found)$('solitaireStatus').textContent='Try alternating-color descending moves between columns.'}
-function renderSolStats(){if(!$('solScore'))return;$('solScore').textContent='Score: '+solitaireScore;$('solMoves').textContent='Moves: '+solitaireMoves;$('solTime').textContent='Time: '+String(Math.floor(solitaireSeconds/60)).padStart(2,'0')+':'+String(solitaireSeconds%60).padStart(2,'0')}
-function shutdown(){if(confirm("Shut down NovaWare?")){$("boot").style.display="flex";$("boot").querySelector("div:nth-child(2)").textContent="NovaWare is shutting down...";setTimeout(()=>{$("boot").style.display="none";toast("NovaWare is still running in this tab.")},900)}}
-/* Minesweeper */
-let mw,mh,mm,mineCells=[],mineOver=false,mineFirst=true;function newMineGame(){clearInterval(mineInterval);[mw,mh,mm]=$("difficulty").value.split(",").map(Number);mineCells=Array.from({length:mw*mh},()=>({mine:false,open:false,flag:false,num:0}));mineOver=false;mineFirst=true;mineSeconds=0;$("mineTime").textContent=0;$("mineCount").textContent=mm;$("mineStatus").textContent="Good luck!";renderMines()}
-function mineNeighbors(i){let x=i%mw,y=Math.floor(i/mw),a=[];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){let nx=x+dx,ny=y+dy;if((dx||dy)&&nx>=0&&nx<mw&&ny>=0&&ny<mh)a.push(ny*mw+nx)}return a}
-function generateMines(safe){let forbidden=[safe,...mineNeighbors(safe)],count=0;while(count<mm){let i=Math.floor(Math.random()*mineCells.length);if(!mineCells[i].mine&&!forbidden.includes(i)){mineCells[i].mine=true;count++}}mineCells.forEach((c,i)=>{if(!c.mine)c.num=mineNeighbors(i).filter(n=>mineCells[n].mine).length})}
-function mineReveal(i){if(mineOver||mineCells[i].open||mineCells[i].flag)return;if(mineFirst){generateMines(i);mineFirst=false;mineInterval=setInterval(()=>{$("mineTime").textContent=++mineSeconds},1000)}let c=mineCells[i];c.open=true;if(c.mine){mineOver=true;clearInterval(mineInterval);$("mineStatus").textContent="BOOM! Game over!";mineCells.forEach(x=>{if(x.mine)x.open=true});renderMines();return}if(c.num===0)mineNeighbors(i).forEach(n=>mineReveal(n));if(mineCells.every(x=>x.mine||x.open)){mineOver=true;clearInterval(mineInterval);$("mineStatus").textContent="YOU WIN!"}renderMines()}
-function mineFlag(i){if(mineOver||mineCells[i].open)return;mineCells[i].flag=!mineCells[i].flag;$("mineCount").textContent=mm-mineCells.filter(x=>x.flag).length;renderMines()}
-function renderMines(){let b=$("mineBoard");b.style.gridTemplateColumns=`repeat(${mw},27px)`;b.innerHTML="";mineCells.forEach((c,i)=>{let el=document.createElement("button");el.className="minecell";if(c.open){el.classList.add("open");if(c.mine)el.textContent="✹";else if(c.num)el.textContent=c.num}else if(c.flag)el.textContent="⚑";el.onclick=()=>mineReveal(i);el.oncontextmenu=e=>{e.preventDefault();mineFlag(i)};b.appendChild(el)})}
-/* Snake */
-function startSnake(){stopSnake();snake=[{x:7,y:7},{x:6,y:7},{x:5,y:7}];direction={x:1,y:0};score=0;snakeAlive=true;$("snakeScore").textContent=0;spawnFood();drawSnake();snakeLoop=setInterval(updateSnake,120)}
-function stopSnake(){clearInterval(snakeLoop);snakeAlive=false}
-function spawnFood(){food={x:Math.floor(Math.random()*15),y:Math.floor(Math.random()*15)}}
-function updateSnake(){if(!snakeAlive)return;let h={x:snake[0].x+direction.x,y:snake[0].y+direction.y};if(h.x<0||h.x>=15||h.y<0||h.y>=15||snake.some((p,i)=>i!==snake.length-1&&p.x===h.x&&p.y===h.y)){stopSnake();return}snake.unshift(h);if(h.x===food.x&&h.y===food.y){score+=10;$("snakeScore").textContent=score;spawnFood()}else snake.pop();drawSnake()}
-function drawSnake(){let c=$("snakeCanvas"),ctx=c.getContext("2d");ctx.fillStyle="#111";ctx.fillRect(0,0,300,300);ctx.fillStyle="red";ctx.fillRect(food.x*20,food.y*20,18,18);ctx.fillStyle="#55ff55";snake.forEach(p=>ctx.fillRect(p.x*20,p.y*20,18,18))}
-/* Pong */
-function startPong(){stopPong();playerY=95;computerY=95;playerScore=computerScore=0;ball={x:200,y:125,dx:4,dy:3};$("pongScore").textContent="0 - 0";pongRunning=true;drawPong();pongLoop=setInterval(updatePong,20)}
-function stopPong(){clearInterval(pongLoop);pongRunning=false}
-function updatePong(){if(!pongRunning)return;ball.x+=ball.dx;ball.y+=ball.dy;if(ball.y<5||ball.y>245)ball.dy*=-1;computerY=Math.max(0,Math.min(190,computerY+(ball.y-computerY-30)*.055));if(ball.x<25&&ball.y>playerY&&ball.y<playerY+60)ball.dx=Math.abs(ball.dx);if(ball.x>375&&ball.y>computerY&&ball.y<computerY+60)ball.dx=-Math.abs(ball.dx);if(ball.x<0||ball.x>400){if(ball.x<0)computerScore++;else playerScore++;$("pongScore").textContent=playerScore+" - "+computerScore;ball={x:200,y:125,dx:ball.x<0?4:-4,dy:3};if(playerScore>=5||computerScore>=5){stopPong();return}}drawPong()}
-function drawPong(){let c=$("pongCanvas"),ctx=c.getContext("2d");ctx.fillStyle="#111";ctx.fillRect(0,0,400,250);ctx.fillStyle="white";for(let y=0;y<250;y+=20)ctx.fillRect(198,y,4,10);ctx.fillRect(12,playerY,10,60);ctx.fillRect(378,computerY,10,60);ctx.fillRect(ball.x-5,ball.y-5,10,10)}
-/* Breakout */
-function startBreakout(){stopBreakout();paddle.x=165;brickBall={x:200,y:230,dx:3,dy:-3};bricks=[];for(let r=0;r<4;r++)for(let c=0;c<8;c++)bricks.push({x:8+c*49,y:20+r*24,alive:true});breakRunning=true;$("breakStatus").textContent="Playing!";drawBreakout();breakLoop=setInterval(updateBreakout,20)}
-function stopBreakout(){clearInterval(breakLoop);breakRunning=false}
-function updateBreakout(){if(!breakRunning)return;brickBall.x+=brickBall.dx;brickBall.y+=brickBall.dy;if(brickBall.x<6||brickBall.x>394)brickBall.dx*=-1;if(brickBall.y<5)brickBall.dy*=-1;if(brickBall.y>270){stopBreakout();$("breakStatus").textContent="Game over!";return}if(brickBall.y>265&&brickBall.x>paddle.x&&brickBall.x<paddle.x+70)brickBall.dy=-Math.abs(brickBall.dy);bricks.forEach(b=>{if(b.alive&&brickBall.x>b.x&&brickBall.x<b.x+44&&brickBall.y>b.y&&brickBall.y<b.y+16){b.alive=false;brickBall.dy*=-1}});if(bricks.every(b=>!b.alive)){stopBreakout();$("breakStatus").textContent="YOU WIN!"}drawBreakout()}
-function drawBreakout(){let c=$("breakCanvas"),ctx=c.getContext("2d");ctx.fillStyle="#111";ctx.fillRect(0,0,400,300);bricks.forEach((b,i)=>{if(!b.alive)return;ctx.fillStyle=["#ff5555","#ffaa33","#55cc55","#5599ff"][Math.floor(i/8)];ctx.fillRect(b.x,b.y,44,16)});ctx.fillStyle="white";ctx.fillRect(paddle.x,275,70,10);ctx.beginPath();ctx.arc(brickBall.x,brickBall.y,6,0,Math.PI*2);ctx.fill()}
-document.addEventListener("keydown",e=>{const visible=id=>{let w=$("win-"+id);return w&&w.style.display!=="none"};if(snakeAlive&&visible("snake")){let k={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}};if(k[e.key]){let d=k[e.key];if(d.x!==-direction.x||d.y!==-direction.y)direction=d;e.preventDefault()}}if(visible("pong")){if(e.key.toLowerCase()==="w")playerY=Math.max(0,playerY-15);if(e.key.toLowerCase()==="s")playerY=Math.min(190,playerY+15)}if(visible("breakout")){if(e.key==="ArrowLeft")paddle.x=Math.max(0,paddle.x-20);if(e.key==="ArrowRight")paddle.x=Math.min(330,paddle.x+20)}});
-function updateClock(){$("clock").textContent=new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}
-window.addEventListener("beforeunload",()=>{if(audioURL)URL.revokeObjectURL(audioURL);if(videoURL)URL.revokeObjectURL(videoURL)});
-boot();
-</script>
+      <div style="height:18px"></div>
+      <div class="empty-card"><strong>More projects are on the way.</strong><br>New applications and experiments will appear here as they are released.</div>
+    </section>
+
+    <section id="about">
+      <div class="section-heading">
+        <div>
+          <h2>About NovaHub</h2>
+          <p>One place for the things being made and shared.</p>
+        </div>
+      </div>
+      <div class="about-grid">
+        <div class="about-card"><div class="symbol">▣</div><h3>Applications</h3><p>Find desktop apps and tools made for curious computer users.</p></div>
+        <div class="about-card"><div class="symbol">⌘</div><h3>Projects</h3><p>A home for experiments, prototypes and other creations.</p></div>
+        <div class="about-card"><div class="symbol">↗</div><h3>Open updates</h3><p>Follow releases and project changes through GitHub.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">
+      <span>© 2026 NovaHub · Made by Nova</span>
+      <span><a href="https://github.com/GFDGF-arch/NovaHub">GitHub repository</a></span>
+    </div>
+  </footer>
 </body>
 </html>
