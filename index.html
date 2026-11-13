@@ -1,190 +1,463 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101a35">
-  <meta name="description" content="NovaHub — a home for applications, projects and downloads by Nova.">
-  <title>NovaHub — Apps, projects & downloads</title>
-  <style>
-    :root {
-      --bg: #0c1224;
-      --panel: #151f38;
-      --panel2: #1b2948;
-      --line: #344464;
-      --text: #edf3ff;
-      --muted: #aab8d2;
-      --blue: #78aaff;
-      --cyan: #76e0e2;
-      --green: #85e0a3;
-      --shadow: 0 18px 55px rgba(0,0,0,.28);
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      color: var(--text);
-      background:
-        radial-gradient(ellipse at 15% 0%, rgba(73,112,190,.22), transparent 42%),
-        radial-gradient(ellipse at 100% 35%, rgba(47,157,171,.12), transparent 35%),
-        var(--bg);
-      font: 15px/1.6 "Segoe UI", Tahoma, sans-serif;
-    }
-    a { color: inherit; }
-    .shell { width: min(1000px, calc(100% - 32px)); margin: 0 auto; }
-    header {
-      position: sticky; top: 0; z-index: 5;
-      background: rgba(12,18,36,.88);
-      border-bottom: 1px solid rgba(120,170,255,.2);
-      backdrop-filter: blur(12px);
-    }
-    .nav { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; font-weight: 750; font-size: 19px; letter-spacing: .2px; }
-    .brand-mark {
-      width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px;
-      color: #0d1930; font-weight: 900; background: linear-gradient(135deg,var(--blue),var(--cyan));
-      box-shadow: 0 5px 18px rgba(118,224,226,.2);
-    }
-    .nav-links { display: flex; gap: 22px; color: var(--muted); font-size: 13px; }
-    .nav-links a { text-decoration: none; }
-    .nav-links a:hover { color: white; }
-    .hero { padding: 82px 0 55px; }
-    .tag {
-      display: inline-flex; align-items: center; gap: 8px; padding: 6px 11px;
-      border: 1px solid #3b5279; border-radius: 999px; color: #c8dcff;
-      background: rgba(66,104,166,.15); font-size: 12px; font-weight: 650;
-    }
-    .tag-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
-    h1 { margin: 19px 0 12px; max-width: 720px; font-size: clamp(42px,8vw,70px); line-height: 1.04; letter-spacing: -2.8px; }
-    .gradient { color: transparent; background: linear-gradient(90deg,#a8caff,#7ce2e4); background-clip: text; }
-    .hero p { max-width: 620px; color: var(--muted); font-size: 17px; margin: 0; }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 27px; }
-    .btn {
-      display: inline-flex; justify-content: center; align-items: center; gap: 9px;
-      padding: 11px 17px; border-radius: 9px; text-decoration: none; font-weight: 700;
-      border: 1px solid transparent; transition: transform .15s, background .15s;
-    }
-    .btn:hover { transform: translateY(-2px); }
-    .btn-primary { color: #0c1830; background: linear-gradient(110deg,#a8caff,#7ce2e4); }
-    .btn-secondary { color: var(--text); border-color: var(--line); background: rgba(255,255,255,.035); }
-    section { padding: 25px 0 48px; }
-    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 15px; margin-bottom: 18px; }
-    .section-heading h2 { margin: 0; font-size: 25px; letter-spacing: -.6px; }
-    .section-heading p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
-    .app-card {
-      display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 18px;
-      padding: 22px; border: 1px solid var(--line); border-radius: 15px;
-      background: linear-gradient(130deg,rgba(27,41,72,.96),rgba(21,31,56,.96));
-      box-shadow: var(--shadow);
-    }
-    .app-icon {
-      width: 62px; height: 62px; display: grid; place-items: center; border-radius: 14px;
-      color: #d9e8ff; font-size: 27px; font-weight: 800;
-      background: linear-gradient(145deg,#294c80,#172a4b); border: 1px solid #5273a5;
-    }
-    .app-info h3 { margin: 0; font-size: 19px; }
-    .app-info p { margin: 4px 0 9px; color: var(--muted); font-size: 13px; }
-    .pills { display: flex; flex-wrap: wrap; gap: 7px; }
-    .pill { padding: 3px 8px; border-radius: 6px; color: #c5d8f7; background: #263958; font-size: 11px; }
-    .status { color: var(--green); }
-    .download-note { margin: 12px 2px 0; color: #91a2bf; font-size: 12px; }
-    .empty-card {
-      padding: 23px; border: 1px dashed #405273; border-radius: 13px;
-      color: var(--muted); background: rgba(255,255,255,.018);
-    }
-    .empty-card strong { color: var(--text); }
-    .about-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 13px; }
-    .about-card { padding: 17px; border: 1px solid var(--line); border-radius: 12px; background: rgba(21,31,56,.72); }
-    .about-card .symbol { color: var(--cyan); font-size: 19px; }
-    .about-card h3 { margin: 7px 0 4px; font-size: 14px; }
-    .about-card p { margin: 0; color: var(--muted); font-size: 12px; }
-    footer { margin-top: 28px; padding: 23px 0 35px; border-top: 1px solid rgba(120,170,255,.16); color: #8798b6; font-size: 12px; }
-    footer .shell { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-    @media (max-width: 650px) {
-      .nav-links { gap: 12px; font-size: 12px; }
-      .hero { padding-top: 59px; }
-      .app-card { grid-template-columns: auto 1fr; }
-      .app-card .app-action { grid-column: 1 / -1; }
-      .app-action .btn { width: 100%; }
-      .about-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 390px) { .nav-links a:nth-child(2) { display:none; } h1 { letter-spacing:-1.8px; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101a35">
+<meta name="description" content="NovaHub - applications, projects and downloads.">
+<title>NovaHub - Software Hub</title>
+
+<style>
+:root {
+  --bg: #0c1224;
+  --panel: #151f38;
+  --panel2: #1b2948;
+  --line: #344464;
+  --text: #edf3ff;
+  --muted: #aab8d2;
+  --blue: #78aaff;
+  --cyan: #76e0e2;
+  --green: #85e0a3;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(73,112,190,.22), transparent 42%),
+    radial-gradient(ellipse at 100% 35%, rgba(47,157,171,.12), transparent 35%),
+    var(--bg);
+  font: 15px/1.6 "Segoe UI", Tahoma, sans-serif;
+}
+
+a { color: inherit; }
+
+.shell {
+  width: min(1000px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgba(12,18,36,.9);
+  border-bottom: 1px solid rgba(120,170,255,.2);
+  backdrop-filter: blur(12px);
+}
+
+.nav {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  font-weight: 750;
+  font-size: 19px;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #0d1930;
+  font-weight: 900;
+  background: linear-gradient(135deg,var(--blue),var(--cyan));
+}
+
+.nav-links {
+  display: flex;
+  gap: 22px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.nav-links a { text-decoration: none; }
+.nav-links a:hover { color: white; }
+
+.hero { padding: 82px 0 55px; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 11px;
+  border: 1px solid #3b5279;
+  border-radius: 999px;
+  color: #c8dcff;
+  background: rgba(66,104,166,.15);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.tag-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+h1 {
+  margin: 19px 0 12px;
+  max-width: 720px;
+  font-size: clamp(42px,8vw,70px);
+  line-height: 1.04;
+  letter-spacing: -2.8px;
+}
+
+.gradient {
+  color: transparent;
+  background: linear-gradient(90deg,#a8caff,#7ce2e4);
+  background-clip: text;
+}
+
+.hero p {
+  max-width: 620px;
+  color: var(--muted);
+  font-size: 17px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 27px;
+}
+
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 17px;
+  border-radius: 9px;
+  text-decoration: none;
+  font-weight: 700;
+  border: 1px solid transparent;
+  transition: transform .15s;
+}
+
+.btn:hover { transform: translateY(-2px); }
+
+.btn-primary {
+  color: #0c1830;
+  background: linear-gradient(110deg,#a8caff,#7ce2e4);
+}
+
+.btn-secondary {
+  color: var(--text);
+  border-color: var(--line);
+  background: rgba(255,255,255,.035);
+}
+
+section { padding: 25px 0 48px; }
+
+.section-heading { margin-bottom: 18px; }
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.section-heading p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.app-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: linear-gradient(130deg,var(--panel2),var(--panel));
+  box-shadow: 0 18px 55px rgba(0,0,0,.28);
+}
+
+.app-icon {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #d9e8ff;
+  font-size: 27px;
+  font-weight: 800;
+  background: linear-gradient(145deg,#294c80,#172a4b);
+  border: 1px solid #5273a5;
+}
+
+.app-info h3 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.app-info p {
+  margin: 4px 0 9px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.pill {
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: #c5d8f7;
+  background: #263958;
+  font-size: 11px;
+}
+
+.status { color: var(--green); }
+
+.download-note {
+  margin: 12px 2px 0;
+  color: #91a2bf;
+  font-size: 12px;
+}
+
+.empty-card {
+  padding: 23px;
+  border: 1px dashed #405273;
+  border-radius: 13px;
+  color: var(--muted);
+  background: rgba(255,255,255,.018);
+}
+
+.empty-card strong { color: var(--text); }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 13px;
+}
+
+.about-card {
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(21,31,56,.72);
+}
+
+.about-card .symbol {
+  color: var(--cyan);
+  font-size: 19px;
+}
+
+.about-card h3 {
+  margin: 7px 0 4px;
+  font-size: 14px;
+}
+
+.about-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+footer {
+  margin-top: 28px;
+  padding: 23px 0 35px;
+  border-top: 1px solid rgba(120,170,255,.16);
+  color: #8798b6;
+  font-size: 12px;
+}
+
+footer .shell {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media(max-width:650px) {
+  .nav-links { gap: 12px; font-size: 12px; }
+  .hero { padding-top: 59px; }
+  .app-card { grid-template-columns: auto 1fr; }
+  .app-card .app-action { grid-column: 1 / -1; }
+  .app-action .btn { width: 100%; }
+  .about-grid { grid-template-columns: 1fr; }
+}
+
+@media(max-width:390px) {
+  .nav-links a:nth-child(2) { display:none; }
+  h1 { letter-spacing: -1.8px; }
+}
+</style>
 </head>
+
 <body>
-  <header>
-    <div class="shell nav">
-      <a class="brand" href="#top"><span class="brand-mark">N</span> NovaHub</a>
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="#apps">Applications</a>
-        <a href="#about">About</a>
-        <a href="https://github.com/GFDGF-arch/NovaHub" target="_blank" rel="noopener">GitHub ↗</a>
-      </nav>
+
+<header>
+  <div class="shell nav">
+    <a class="brand" href="#top">
+      <span class="brand-mark">N</span>
+      NovaHub
+    </a>
+
+    <nav class="nav-links">
+      <a href="#apps">Applications</a>
+      <a href="#about">About</a>
+      <a href="https://github.com/GFDGF-arch/NovaHub" target="_blank">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="shell">
+
+  <div class="hero">
+    <span class="tag">
+      <span class="tag-dot"></span>
+      A small independent software hub
+    </span>
+
+    <h1>
+      Your next favourite app starts at
+      <span class="gradient">NovaHub.</span>
+    </h1>
+
+    <p>
+      A home for applications, experiments and projects.
+      Browse what's available, grab a download and see
+      what's being built next.
+    </p>
+
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#apps">
+        Explore applications ↓
+      </a>
+
+      <a class="btn btn-secondary"
+         href="https://github.com/GFDGF-arch/NovaHub"
+         target="_blank">
+        View GitHub ↗
+      </a>
     </div>
-  </header>
+  </div>
 
-  <main id="top" class="shell">
-    <div class="hero">
-      <span class="tag"><span class="tag-dot"></span> A small independent software hub</span>
-      <h1>Your next favourite app starts at <span class="gradient">NovaHub.</span></h1>
-      <p>A home for applications, experiments and projects. Browse what's available, grab a download and see what's being built next.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#apps">Explore applications ↓</a>
-        <a class="btn btn-secondary" href="https://github.com/GFDGF-arch/NovaHub" target="_blank" rel="noopener">View the GitHub repo ↗</a>
-      </div>
+  <section id="apps">
+
+    <div class="section-heading">
+      <h2>Applications</h2>
+      <p>Software currently featured on NovaHub.</p>
     </div>
 
-    <section id="apps">
-      <div class="section-heading">
-        <div>
-          <h2>Applications</h2>
-          <p>Software currently featured on NovaHub.</p>
-        </div>
-        <span class="tag">1 featured app</span>
-      </div>
+    <article class="app-card">
 
-      <article class="app-card">
-        <div class="app-icon" aria-hidden="true">Nw</div>
-        <div class="app-info">
-          <h3>NovaWare <span style="color:#9db6dd;font-size:13px;font-weight:500">9.2</span></h3>
-          <p>A desktop application by Nova. Available for Windows.</p>
-          <div class="pills">
-            <span class="pill">Windows</span>
-            <span class="pill">Desktop app</span>
-            <span class="pill status">Release page needed</span>
-          </div>
-        </div>
-        <div class="app-action">
-          <!-- Replace the href with the direct GitHub Release asset URL when you upload NovaWare.exe. -->
-          <a class="btn btn-primary" href="https://github.com/GFDGF-arch/NovaHub/releases" target="_blank" rel="noopener">Get NovaWare ↗</a>
-        </div>
-      </article>
-      <p class="download-note">The button currently opens the NovaHub Releases page. Upload NovaWare.exe as a GitHub Release asset to make it downloadable there.</p>
+      <div class="app-icon">Nw</div>
 
-      <div style="height:18px"></div>
-      <div class="empty-card"><strong>More projects are on the way.</strong><br>New applications and experiments will appear here as they are released.</div>
-    </section>
+      <div class="app-info">
+        <h3>NovaWare 9.2</h3>
 
-    <section id="about">
-      <div class="section-heading">
-        <div>
-          <h2>About NovaHub</h2>
-          <p>One place for the things being made and shared.</p>
+        <p>
+          A desktop application by Nova.
+          Available for Windows.
+        </p>
+
+        <div class="pills">
+          <span class="pill">Windows</span>
+          <span class="pill">Desktop app</span>
+          <span class="pill status">Available</span>
         </div>
       </div>
-      <div class="about-grid">
-        <div class="about-card"><div class="symbol">▣</div><h3>Applications</h3><p>Find desktop apps and tools made for curious computer users.</p></div>
-        <div class="about-card"><div class="symbol">⌘</div><h3>Projects</h3><p>A home for experiments, prototypes and other creations.</p></div>
-        <div class="about-card"><div class="symbol">↗</div><h3>Open updates</h3><p>Follow releases and project changes through GitHub.</p></div>
-      </div>
-    </section>
-  </main>
 
-  <footer>
-    <div class="shell">
-      <span>© 2026 NovaHub · Made by Nova</span>
-      <span><a href="https://github.com/GFDGF-arch/NovaHub">GitHub repository</a></span>
+      <div class="app-action">
+        <a class="btn btn-primary"
+           href="https://github.com/GFDGF-arch/NovaHub/releases/latest/download/NovaWare.exe">
+          ↓ Download NovaWare
+        </a>
+      </div>
+
+    </article>
+
+    <p class="download-note">
+      Downloads the latest NovaWare.exe release from GitHub.
+    </p>
+
+    <br>
+
+    <div class="empty-card">
+      <strong>More projects are on the way.</strong>
+      <br>
+      New applications and experiments will appear here
+      as they are released.
     </div>
-  </footer>
+
+  </section>
+
+  <section id="about">
+
+    <div class="section-heading">
+      <h2>About NovaHub</h2>
+      <p>One place for the things being made and shared.</p>
+    </div>
+
+    <div class="about-grid">
+
+      <div class="about-card">
+        <div class="symbol">▣</div>
+        <h3>Applications</h3>
+        <p>
+          Find desktop apps and tools made for
+          curious computer users.
+        </p>
+      </div>
+
+      <div class="about-card">
+        <div class="symbol">⌘</div>
+        <h3>Projects</h3>
+        <p>
+          A home for experiments, prototypes
+          and other creations.
+        </p>
+      </div>
+
+      <div class="about-card">
+        <div class="symbol">↗</div>
+        <h3>Open updates</h3>
+        <p>
+          Follow releases and project changes
+          through GitHub.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="shell">
+    <span>© 2026 NovaHub · Made by Nova</span>
+
+    <span>
+      <a href="https://github.com/GFDGF-arch/NovaHub">
+        GitHub repository
+      </a>
+    </span>
+  </div>
+</footer>
+
 </body>
 </html>
